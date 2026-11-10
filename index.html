@@ -44,31 +44,6 @@
             z-index: 100;
         }
 
-        .user-switcher {
-            display: flex;
-            gap: 8px;
-            background: var(--bg);
-            padding: 4px;
-            border-radius: 20px;
-            border: 1px solid var(--border);
-        }
-
-        .user-btn {
-            border: none;
-            background: transparent;
-            padding: 6px 12px;
-            border-radius: 16px;
-            font-size: 12px;
-            font-weight: 600;
-            cursor: pointer;
-            color: var(--gray);
-        }
-
-        .user-btn.active {
-            background: var(--primary);
-            color: var(--white);
-        }
-
         .container {
             padding: 16px;
         }
@@ -120,6 +95,22 @@
         .badge-mine { background: #EBF8FF; color: #2B6CB0; }
         .badge-theirs { background: #FFE3E3; color: #C53030; }
         .badge-both { background: #FAF5FF; color: #6B46C1; }
+
+        /* Schermata Login */
+        #authScreen {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            height: 100vh;
+            padding: 24px;
+            background: var(--white);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 1000;
+        }
 
         /* Bottom Nav */
         nav {
@@ -197,176 +188,255 @@
 </head>
 <body>
 
-    <header>
-        <div>
-            <h1 id="welcomeTitle" style="font-size: 16px;">Ciao, Utente 1 👋</h1>
-            <p style="font-size: 11px; color: var(--gray);">La nostra vita in comune</p>
+    <!-- SCHERMATA DI AUTENTICAZIONE -->
+    <div id="authScreen">
+        <h1 style="text-align: center; color: var(--primary); margin-bottom: 24px;">❤️ OurSync</h1>
+        <div class="form-group">
+            <label>Email</label>
+            <input type="email" id="authEmail" placeholder="tua@email.com">
         </div>
-        <div class="user-switcher">
-            <button class="user-btn active" onclick="switchUser('User1')">Tu</button>
-            <button class="user-btn" onclick="switchUser('User2')">Altra persona</button>
+        <div class="form-group">
+            <label>Password</label>
+            <input type="password" id="authPassword" placeholder="********">
         </div>
-    </header>
-
-    <div class="container">
-        <!-- SEZIONE HOME -->
-        <section id="home" class="section active">
-            <h2>📅 Oggi</h2>
-            <div id="todayList"></div>
-
-            <h2>✅ To-Do da completare</h2>
-            <div id="todoListHome"></div>
-        </section>
-
-        <!-- SEZIONE CALENDARIO -->
-        <section id="calendar" class="section">
-            <h2>Nuovo Evento</h2>
-            <div class="card">
-                <div class="form-group">
-                    <label>Titolo Evento</label>
-                    <input type="text" id="evTitle" placeholder="Es. Cena fuori">
-                </div>
-                <div class="form-group">
-                    <label>Data</label>
-                    <input type="date" id="evDate">
-                </div>
-                <div class="form-group">
-                    <label>Assegnazione</label>
-                    <select id="evOwner">
-                        <option value="mine">Mio</option>
-                        <option value="theirs">Dell'altra persona</option>
-                        <option value="both">Entrambi (In comune)</option>
-                    </select>
-                </div>
-                <button class="primary-btn" onclick="addEvent()">Aggiungi Evento</button>
-            </div>
-
-            <h2>Tutti gli Eventi</h2>
-            <div id="eventsContainer"></div>
-        </section>
-
-        <!-- SEZIONE ATTIVITÀ -->
-        <section id="tasks" class="section">
-            <h2>Nuova Task</h2>
-            <div class="card">
-                <div class="form-group">
-                    <label>Cosa fare?</label>
-                    <input type="text" id="taskTitle" placeholder="Es. Fare la spesa">
-                </div>
-                <button class="primary-btn" onclick="addTask()">Aggiungi Task</button>
-            </div>
-            <h2>Lista Attività</h2>
-            <div id="tasksContainer"></div>
-        </section>
-
-        <!-- SEZIONE NOTE -->
-        <section id="notes" class="section">
-            <h2>Nuova Nota</h2>
-            <div class="card">
-                <div class="form-group">
-                    <label>Titolo Nota</label>
-                    <input type="text" id="noteTitle" placeholder="Titolo">
-                </div>
-                <div class="form-group">
-                    <label>Contenuto</label>
-                    <textarea id="noteContent" placeholder="Scrivi qui..."></textarea>
-                </div>
-                <div class="form-group">
-                    <label>Privacy</label>
-                    <select id="notePrivate">
-                        <option value="false">Condivisa</option>
-                        <option value="true">Privata</option>
-                    </select>
-                </div>
-                <button class="primary-btn" onclick="addNote()">Salva Nota</button>
-            </div>
-            <h2>Le tue Note</h2>
-            <div id="notesContainer"></div>
-        </section>
+        <button class="primary-btn" onclick="handleLogin()">Accedi</button>
+        <button style="background: transparent; color: var(--gray); border: none; margin-top: 12px; cursor: pointer;" onclick="handleRegister()">Non hai un account? Registrati</button>
     </div>
 
-    <!-- BOTTOM NAVIGATION -->
-    <nav>
-        <button class="nav-item active" onclick="switchTab('home', this)">
-            <span class="icon">🏠</span> Home
-        </button>
-        <button class="nav-item" onclick="switchTab('calendar', this)">
-            <span class="icon">📅</span> Calendario
-        </button>
-        <button class="nav-item" onclick="switchTab('tasks', this)">
-            <span class="icon">✅</span> Attività
-        </button>
-        <button class="nav-item" onclick="switchTab('notes', this)">
-            <span class="icon">📝</span> Note
-        </button>
-    </nav>
+    <!-- APP PRINCIPALE -->
+    <div id="mainApp" style="display: none;">
+        <header>
+            <div>
+                <h1 id="welcomeTitle" style="font-size: 16px;">Ciao 👋</h1>
+                <p style="font-size: 11px; color: var(--gray);">La nostra vita in comune</p>
+            </div>
+            <button onclick="logout()" style="background: var(--border); border: none; padding: 6px 12px; border-radius: 8px; font-size: 12px; cursor: pointer;">Esci</button>
+        </header>
 
-    <script>
-        // Stato iniziale simulato (in produzione sincronizzato via Backend/WebSocket)
-        let currentUser = 'User1';
-        let events = JSON.parse(localStorage.getItem('app_events')) || [
-            { id: 1, title: 'Cena insieme', date: new Date().toISOString().split('T')[0], owner: 'both' },
-            { id: 2, title: 'Palestra', date: new Date().toISOString().split('T')[0], owner: 'mine' }
-        ];
-        let tasks = JSON.parse(localStorage.getItem('app_tasks')) || [
-            { id: 1, title: 'Pagare bolletta', completed: false },
-            { id: 2, title: 'Acquistare caffè', completed: true }
-        ];
-        let notes = JSON.parse(localStorage.getItem('app_notes')) || [
-            { id: 1, title: 'Film da vedere', content: 'Inception, Interstellar', isPrivate: false, author: 'User1' }
-        ];
+        <div class="container">
+            <!-- SEZIONE HOME -->
+            <section id="home" class="section active">
+                <h2>📅 Oggi</h2>
+                <div id="todayList"></div>
 
-        function switchUser(user) {
-            currentUser = user;
-            document.querySelectorAll('.user-btn').forEach(btn => btn.classList.toggle('active', btn.textContent.includes(user === 'User1' ? 'Tu' : 'altra')));
-            document.getElementById('welcomeTitle').textContent = user === 'User1' ? 'Ciao, Utente 1 👋' : 'Ciao, Utente 2 👋';
-            renderAll();
+                <h2>✅ To-Do da completare</h2>
+                <div id="todoListHome"></div>
+            </section>
+
+            <!-- SEZIONE CALENDARIO -->
+            <section id="calendar" class="section">
+                <h2>Nuovo Evento</h2>
+                <div class="card">
+                    <div class="form-group">
+                        <label>Titolo Evento</label>
+                        <input type="text" id="evTitle" placeholder="Es. Cena fuori">
+                    </div>
+                    <div class="form-group">
+                        <label>Data</label>
+                        <input type="date" id="evDate">
+                    </div>
+                    <div class="form-group">
+                        <label>Assegnazione</label>
+                        <select id="evOwner">
+                            <option value="mine">Mio</option>
+                            <option value="theirs">Dell'altra persona</option>
+                            <option value="both">Entrambi (In comune)</option>
+                        </select>
+                    </div>
+                    <button class="primary-btn" onclick="addEvent()">Aggiungi Evento</button>
+                </div>
+
+                <h2>Tutti gli Eventi</h2>
+                <div id="eventsContainer"></div>
+            </section>
+
+            <!-- SEZIONE ATTIVITÀ -->
+            <section id="tasks" class="section">
+                <h2>Nuova Task</h2>
+                <div class="card">
+                    <div class="form-group">
+                        <label>Cosa fare?</label>
+                        <input type="text" id="taskTitle" placeholder="Es. Fare la spesa">
+                    </div>
+                    <button class="primary-btn" onclick="addTask()">Aggiungi Task</button>
+                </div>
+                <h2>Lista Attività</h2>
+                <div id="tasksContainer"></div>
+            </section>
+
+            <!-- SEZIONE NOTE -->
+            <section id="notes" class="section">
+                <h2>Nuova Nota</h2>
+                <div class="card">
+                    <div class="form-group">
+                        <label>Titolo Nota</label>
+                        <input type="text" id="noteTitle" placeholder="Titolo">
+                    </div>
+                    <div class="form-group">
+                        <label>Contenuto</label>
+                        <textarea id="noteContent" placeholder="Scrivi qui..."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Privacy</label>
+                        <select id="notePrivate">
+                            <option value="false">Condivisa</option>
+                            <option value="true">Privata</option>
+                        </select>
+                    </div>
+                    <button class="primary-btn" onclick="addNote()">Salva Nota</button>
+                </div>
+                <h2>Le Note</h2>
+                <div id="notesContainer"></div>
+            </section>
+        </div>
+
+        <!-- BOTTOM NAVIGATION -->
+        <nav>
+            <button class="nav-item active" onclick="switchTab('home', this)">
+                <span class="icon">🏠</span> Home
+            </button>
+            <button class="nav-item" onclick="switchTab('calendar', this)">
+                <span class="icon">📅</span> Calendario
+            </button>
+            <button class="nav-item" onclick="switchTab('tasks', this)">
+                <span class="icon">✅</span> Attività
+            </button>
+            <button class="nav-item" onclick="switchTab('notes', this)">
+                <span class="icon">📝</span> Note
+            </button>
+        </nav>
+    </div>
+
+    <!-- LOGICA FIREBASE E APP -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js"; // Nota: Auth e Firestore separati
+        // Correzione import Auth:
+        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-auth.js";
+        import { getFirestore, collection, addDoc, updateDoc, doc, onSnapshot, query, deleteDoc } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js";
+
+        // CONFIGURAZIONE FIREBASE (Sostituisci con le tue chiavi della console Firebase)
+        const firebaseConfig = {
+            apiKey: "INSERISCI_LA_TUA_API_KEY",
+            authDomain: "tuo-progetto.firebaseapp.com",
+            projectId: "tuo-progetto",
+            storageBucket: "tuo-progetto.appspot.com",
+            messagingSenderId: "...",
+            appId: "..."
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        let currentUser = null;
+        let events = [];
+        let tasks = [];
+        let notes = [];
+        let unsubEvents = null;
+        let unsubTasks = null;
+        let unsubNotes = null;
+
+        // Gestione Auth UI
+        window.handleLogin = function() {
+            const email = document.getElementById('authEmail').value;
+            const pass = document.getElementById('authPassword').value;
+            signInWithEmailAndPassword(auth, email, pass).catch(err => alert(err.message));
         }
 
-        function switchTab(tabId, btn) {
+        window.handleRegister = function() {
+            const email = document.getElementById('authEmail').value;
+            const pass = document.getElementById('authPassword').value;
+            createUserWithEmailAndPassword(auth, email, pass).catch(err => alert(err.message));
+        }
+
+        window.logout = function() {
+            signOut(auth);
+        }
+
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                currentUser = user;
+                document.getElementById('authScreen').style.display = 'none';
+                document.getElementById('mainApp').style.display = 'block';
+                document.getElementById('welcomeTitle').textContent = `Ciao, ${user.email.split('@')[0]} 👋`;
+                initRealtimeListeners();
+            } else {
+                currentUser = null;
+                document.getElementById('authScreen').style.display = 'flex';
+                document.getElementById('mainApp').style.display = 'none';
+                if(unsubEvents) unsubEvents();
+                if(unsubTasks) unsubTasks();
+                if(unsubNotes) unsubNotes();
+            }
+        });
+
+        // Sincronizzazione in tempo reale con Firestore
+        function initRealtimeListeners() {
+            // Ascolta Eventi
+            unsubEvents = onSnapshot(collection(db, "events"), (snapshot) => {
+                events = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                renderAll();
+            });
+
+            // Ascolta Task
+            unsubTasks = onSnapshot(collection(db, "tasks"), (snapshot) => {
+                tasks = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                renderAll();
+            });
+
+            // Ascolta Note
+            unsubNotes = onSnapshot(collection(db, "notes"), (snapshot) => {
+                notes = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                renderAll();
+            });
+        }
+
+        // Operazioni di Scrittura su Firestore
+        window.addEvent = async function() {
+            const title = document.getElementById('evTitle').value;
+            const date = document.getElementById('evDate').value;
+            const owner = document.getElementById('evOwner').value;
+            if(!title || !date) return alert('Compila tutti i campi');
+            
+            await addDoc(collection(db, "events"), { title, date, owner, createdBy: currentUser.uid });
+            document.getElementById('evTitle').value = '';
+            document.getElementById('evDate').value = '';
+        }
+
+        window.addTask = async function() {
+            const title = document.getElementById('taskTitle').value;
+            if(!title) return;
+            await addDoc(collection(db, "tasks"), { title, completed: false, createdBy: currentUser.uid });
+            document.getElementById('taskTitle').value = '';
+        }
+
+        window.toggleTask = async function(id, currentStatus) {
+            const taskRef = doc(db, "tasks", id);
+            await updateDoc(taskRef, { completed: !currentStatus });
+        }
+
+        window.addNote = async function() {
+            const title = document.getElementById('noteTitle').value;
+            const content = document.getElementById('noteContent').value;
+            const isPrivate = document.getElementById('notePrivate').value === 'true';
+            if(!title) return;
+            await addDoc(collection(db, "notes"), { title, content, isPrivate, author: currentUser.email });
+            document.getElementById('noteTitle').value = '';
+            document.getElementById('noteContent').value = '';
+        }
+
+        window.switchTab = function(tabId, btn) {
             document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
             document.getElementById(tabId).classList.add('active');
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
             btn.classList.add('active');
         }
 
-        function addEvent() {
-            const title = document.getElementById('evTitle').value;
-            const date = document.getElementById('evDate').value;
-            const owner = document.getElementById('evOwner').value;
-            if(!title || !date) return alert('Compila tutti i campi');
-            
-            events.push({ id: Date.now(), title, date, owner });
-            localStorage.setItem('app_events', JSON.stringify(events));
-            document.getElementById('evTitle').value = '';
-            document.getElementById('evDate').value = '';
-            renderAll();
-        }
-
-        function addTask() {
-            const title = document.getElementById('taskTitle').value;
-            if(!title) return;
-            tasks.push({ id: Date.now(), title, completed: false });
-            localStorage.setItem('app_tasks', JSON.stringify(tasks));
-            document.getElementById('taskTitle').value = '';
-            renderAll();
-        }
-
-        function addNote() {
-            const title = document.getElementById('noteTitle').value;
-            const content = document.getElementById('noteContent').value;
-            const isPrivate = document.getElementById('notePrivate').value === 'true';
-            if(!title) return;
-            notes.push({ id: Date.now(), title, content, isPrivate, author: currentUser });
-            localStorage.setItem('app_notes', JSON.stringify(notes));
-            document.getElementById('noteTitle').value = '';
-            document.getElementById('noteContent').value = '';
-            renderAll();
-        }
-
         function renderAll() {
-            // Render Home Today
             const todayStr = new Date().toISOString().split('T')[0];
+            
+            // Home Today
             const todayList = document.getElementById('todayList');
             const todayEvents = events.filter(e => e.date === todayStr);
             todayList.innerHTML = todayEvents.length ? todayEvents.map(e => `
@@ -381,11 +451,11 @@
             todoListHome.innerHTML = openTasks.length ? openTasks.map(t => `
                 <div class="card" style="display:flex; justify-content:space-between; align-items:center;">
                     <span>${t.title}</span>
-                    <input type="checkbox" onchange="toggleTask(${t.id})" ${t.completed ? 'checked' : ''}>
+                    <input type="checkbox" onchange="toggleTask('${t.id}', ${t.completed})" ${t.completed ? 'checked' : ''}>
                 </div>
             `).join('') : '<div class="card card-sub">Tutte le attività completate! 🎉</div>';
 
-            // Render Events
+            // Calendar
             document.getElementById('eventsContainer').innerHTML = events.map(e => `
                 <div class="card">
                     <div class="card-title">${e.title}</div>
@@ -394,17 +464,17 @@
                 </div>
             `).join('');
 
-            // Render Tasks
+            // Tasks
             document.getElementById('tasksContainer').innerHTML = tasks.map(t => `
                 <div class="card" style="display:flex; justify-content:space-between; align-items:center;">
                     <span style="${t.completed ? 'text-decoration: line-through; color: var(--gray);' : ''}">${t.title}</span>
-                    <input type="checkbox" onchange="toggleTask(${t.id})" ${t.completed ? 'checked' : ''}>
+                    <input type="checkbox" onchange="toggleTask('${t.id}', ${t.completed})" ${t.completed ? 'checked' : ''}>
                 </div>
             `).join('');
 
-            // Render Notes (rispettando la privacy)
+            // Notes
             document.getElementById('notesContainer').innerHTML = notes
-                .filter(n => !n.isPrivate || n.author === currentUser)
+                .filter(n => !n.isPrivate || n.author === currentUser.email)
                 .map(n => `
                     <div class="card">
                         <div class="card-title">${n.title} ${n.isPrivate ? '🔒' : '🤝'}</div>
@@ -413,14 +483,6 @@
                     </div>
                 `).join('');
         }
-
-        function toggleTask(id) {
-            tasks = tasks.map(t => t.id === id ? {...t, completed: !t.completed} : t);
-            localStorage.setItem('app_tasks', JSON.stringify(tasks));
-            renderAll();
-        }
-
-        renderAll();
     </script>
 </body>
 </html>
