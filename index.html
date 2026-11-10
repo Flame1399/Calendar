@@ -94,11 +94,6 @@
             font-weight: bold;
             cursor: pointer;
             margin-top: 4px;
-            transition: opacity 0.2s;
-        }
-
-        button:active {
-            opacity: 0.9;
         }
 
         .section-title {
@@ -106,9 +101,6 @@
             font-weight: 600;
             color: var(--text);
             margin-bottom: 12px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
         }
 
         .event-card {
@@ -120,7 +112,6 @@
             justify-content: space-between;
             align-items: center;
             border: 1px solid var(--border);
-            box-shadow: 0 2px 4px rgba(0,0,0,0.01);
         }
 
         .event-info h3 {
@@ -193,16 +184,22 @@
     <div id="eventsList"></div>
 
     <script>
-        let events = JSON.parse(localStorage.getItem('couple_events')) || [
-            { id: 1, title: 'Shooting Collezione Autunno', type: 'Shooting', date: '2026-11-15', author: 'Lei' },
-            { id: 2, title: 'Trasferta di Lavoro Roma', type: 'Trasferta', date: '2026-11-18', author: 'Lei' }
-        ];
+        let events = [];
+        try {
+            const savedEvents = localStorage.getItem('couple_events');
+            events = savedEvents ? JSON.parse(savedEvents) : [
+                { id: 1, title: 'Shooting Collezione Autunno', type: 'Shooting', date: '2026-11-15', author: 'Lei' },
+                { id: 2, title: 'Trasferta di Lavoro Roma', type: 'Trasferta', date: '2026-11-18', author: 'Lei' }
+            ];
+        } catch (e) {
+            events = [];
+        }
 
         function renderEvents() {
             const listContainer = document.getElementById('eventsList');
             listContainer.innerHTML = '';
 
-            if (events.length === 0) {
+            if (!events || events.length === 0) {
                 listContainer.innerHTML = '<div class="empty-state">Nessun evento in programma. Aggiungi il primo!</div>';
                 return;
             }
@@ -250,7 +247,11 @@
             };
 
             events.unshift(newEvent);
-            localStorage.setItem('couple_events', JSON.stringify(events));
+            try {
+                localStorage.setItem('couple_events', JSON.stringify(events));
+            } catch (e) {
+                console.error(e);
+            }
 
             titleInput.value = '';
             dateInput.value = '';
