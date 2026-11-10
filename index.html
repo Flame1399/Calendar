@@ -3,11 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>❤️ Il Nostro Calendario di Coppia</title>
+    <title>❤️ OurSync - Planner di Coppia</title>
     <style>
         :root {
             --primary: #FF6B6B;
             --primary-light: #FFE3E3;
+            --secondary: #4A90E2;
+            --purple: #9B51E0;
             --bg: #F8F9FA;
             --text: #2D3748;
             --gray: #718096;
@@ -25,241 +27,400 @@
         body {
             background-color: var(--bg);
             color: var(--text);
-            padding: 20px;
+            padding-bottom: 70px;
             max-width: 600px;
             margin: 0 auto;
         }
 
         header {
-            margin-bottom: 24px;
-            text-align: center;
-        }
-
-        h1 {
-            font-size: 24px;
-            color: var(--text);
-            margin-bottom: 4px;
-        }
-
-        p.subtitle {
-            font-size: 14px;
-            color: var(--gray);
-        }
-
-        .card-form {
             background: var(--white);
             padding: 16px;
-            border-radius: 16px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .user-switcher {
+            display: flex;
+            gap: 8px;
+            background: var(--bg);
+            padding: 4px;
+            border-radius: 20px;
             border: 1px solid var(--border);
-            margin-bottom: 24px;
         }
 
-        .input-group {
-            margin-bottom: 12px;
-        }
-
-        label {
-            display: block;
+        .user-btn {
+            border: none;
+            background: transparent;
+            padding: 6px 12px;
+            border-radius: 16px;
             font-size: 12px;
             font-weight: 600;
-            color: var(--gray);
-            margin-bottom: 4px;
-            text-transform: uppercase;
-        }
-
-        input, select {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid var(--border);
-            border-radius: 10px;
-            font-size: 14px;
-            outline: none;
-            background: var(--bg);
-        }
-
-        input:focus, select:focus {
-            border-color: var(--primary);
-            background: var(--white);
-        }
-
-        button {
-            width: 100%;
-            background-color: var(--primary);
-            color: var(--white);
-            border: none;
-            padding: 12px;
-            border-radius: 10px;
-            font-size: 14px;
-            font-weight: bold;
             cursor: pointer;
-            margin-top: 4px;
+            color: var(--gray);
         }
 
-        .section-title {
-            font-size: 16px;
-            font-weight: 600;
-            color: var(--text);
+        .user-btn.active {
+            background: var(--primary);
+            color: var(--white);
+        }
+
+        .container {
+            padding: 16px;
+        }
+
+        .section {
+            display: none;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        h2 {
+            font-size: 18px;
             margin-bottom: 12px;
+            color: var(--text);
         }
 
-        .event-card {
+        .card {
             background: var(--white);
             border-radius: 12px;
             padding: 16px;
             margin-bottom: 12px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
             border: 1px solid var(--border);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.01);
         }
 
-        .event-info h3 {
+        .card-title {
             font-size: 15px;
             font-weight: 600;
-            color: var(--text);
             margin-bottom: 4px;
         }
 
-        .event-info p {
+        .card-sub {
             font-size: 12px;
             color: var(--gray);
         }
 
         .badge {
-            padding: 6px 12px;
-            border-radius: 20px;
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 10px;
+            font-size: 10px;
+            font-weight: 600;
+            text-transform: uppercase;
+            margin-top: 6px;
+        }
+
+        .badge-mine { background: #EBF8FF; color: #2B6CB0; }
+        .badge-theirs { background: #FFE3E3; color: #C53030; }
+        .badge-both { background: #FAF5FF; color: #6B46C1; }
+
+        /* Bottom Nav */
+        nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--white);
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 0;
+            max-width: 600px;
+            margin: 0 auto;
+            z-index: 100;
+        }
+
+        .nav-item {
+            background: none;
+            border: none;
+            font-size: 11px;
+            color: var(--gray);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            cursor: pointer;
+        }
+
+        .nav-item.active {
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        .nav-item span.icon {
+            font-size: 18px;
+        }
+
+        /* Form Controls */
+        .form-group {
+            margin-bottom: 12px;
+        }
+
+        label {
+            display: block;
             font-size: 11px;
             font-weight: 600;
+            color: var(--gray);
+            margin-bottom: 4px;
             text-transform: uppercase;
         }
 
-        .badge-Shooting { background: #FEFCBF; color: #744210; }
-        .badge-Trasferta { background: #EBF8FF; color: #2B6CB0; }
-        .badge-Impegno { background: #EDF2F7; color: #4A5568; }
-
-        .empty-state {
-            text-align: center;
-            padding: 24px;
-            color: var(--gray);
+        input, select, textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
             font-size: 14px;
+            outline: none;
+            background: var(--bg);
+        }
+
+        button.primary-btn {
+            width: 100%;
+            background: var(--primary);
+            color: var(--white);
+            border: none;
+            padding: 12px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 8px;
         }
     </style>
 </head>
 <body>
 
     <header>
-        <h1>❤️ Il Nostro Calendario</h1>
-        <p class="subtitle">Shooting, trasferte e impegni sincronizzati</p>
+        <div>
+            <h1 id="welcomeTitle" style="font-size: 16px;">Ciao, Utente 1 👋</h1>
+            <p style="font-size: 11px; color: var(--gray);">La nostra vita in comune</p>
+        </div>
+        <div class="user-switcher">
+            <button class="user-btn active" onclick="switchUser('User1')">Tu</button>
+            <button class="user-btn" onclick="switchUser('User2')">Altra persona</button>
+        </div>
     </header>
 
-    <div class="card-form">
-        <div class="input-group">
-            <label>Titolo Impegno / Evento</label>
-            <input type="text" id="eventTitle" placeholder="Es. Shooting Moda Milano o Hotel Roma">
-        </div>
-        <div class="input-group">
-            <label>Categoria</label>
-            <select id="eventType">
-                <option value="Shooting">📸 Shooting</option>
-                <option value="Trasferta">✈️ Trasferta</option>
-                <option value="Impegno">📌 Impegno Quotidiano</option>
-            </select>
-        </div>
-        <div class="input-group">
-            <label>Data</label>
-            <input type="date" id="eventDate">
-        </div>
-        <div class="input-group">
-            <label>Chi lo fa?</label>
-            <select id="eventAuthor">
-                <option value="Tu">Tu</option>
-                <option value="Lei">Lei</option>
-            </select>
-        </div>
-        <button onclick="addEvent()">Aggiungi al Calendario</button>
+    <div class="container">
+        <!-- SEZIONE HOME -->
+        <section id="home" class="section active">
+            <h2>📅 Oggi</h2>
+            <div id="todayList"></div>
+
+            <h2>✅ To-Do da completare</h2>
+            <div id="todoListHome"></div>
+        </section>
+
+        <!-- SEZIONE CALENDARIO -->
+        <section id="calendar" class="section">
+            <h2>Nuovo Evento</h2>
+            <div class="card">
+                <div class="form-group">
+                    <label>Titolo Evento</label>
+                    <input type="text" id="evTitle" placeholder="Es. Cena fuori">
+                </div>
+                <div class="form-group">
+                    <label>Data</label>
+                    <input type="date" id="evDate">
+                </div>
+                <div class="form-group">
+                    <label>Assegnazione</label>
+                    <select id="evOwner">
+                        <option value="mine">Mio</option>
+                        <option value="theirs">Dell'altra persona</option>
+                        <option value="both">Entrambi (In comune)</option>
+                    </select>
+                </div>
+                <button class="primary-btn" onclick="addEvent()">Aggiungi Evento</button>
+            </div>
+
+            <h2>Tutti gli Eventi</h2>
+            <div id="eventsContainer"></div>
+        </section>
+
+        <!-- SEZIONE ATTIVITÀ -->
+        <section id="tasks" class="section">
+            <h2>Nuova Task</h2>
+            <div class="card">
+                <div class="form-group">
+                    <label>Cosa fare?</label>
+                    <input type="text" id="taskTitle" placeholder="Es. Fare la spesa">
+                </div>
+                <button class="primary-btn" onclick="addTask()">Aggiungi Task</button>
+            </div>
+            <h2>Lista Attività</h2>
+            <div id="tasksContainer"></div>
+        </section>
+
+        <!-- SEZIONE NOTE -->
+        <section id="notes" class="section">
+            <h2>Nuova Nota</h2>
+            <div class="card">
+                <div class="form-group">
+                    <label>Titolo Nota</label>
+                    <input type="text" id="noteTitle" placeholder="Titolo">
+                </div>
+                <div class="form-group">
+                    <label>Contenuto</label>
+                    <textarea id="noteContent" placeholder="Scrivi qui..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Privacy</label>
+                    <select id="notePrivate">
+                        <option value="false">Condivisa</option>
+                        <option value="true">Privata</option>
+                    </select>
+                </div>
+                <button class="primary-btn" onclick="addNote()">Salva Nota</button>
+            </div>
+            <h2>Le tue Note</h2>
+            <div id="notesContainer"></div>
+        </section>
     </div>
 
-    <h2 class="section-title">Prossimi Eventi</h2>
-    <div id="eventsList"></div>
+    <!-- BOTTOM NAVIGATION -->
+    <nav>
+        <button class="nav-item active" onclick="switchTab('home', this)">
+            <span class="icon">🏠</span> Home
+        </button>
+        <button class="nav-item" onclick="switchTab('calendar', this)">
+            <span class="icon">📅</span> Calendario
+        </button>
+        <button class="nav-item" onclick="switchTab('tasks', this)">
+            <span class="icon">✅</span> Attività
+        </button>
+        <button class="nav-item" onclick="switchTab('notes', this)">
+            <span class="icon">📝</span> Note
+        </button>
+    </nav>
 
     <script>
-        let events = [];
-        try {
-            const savedEvents = localStorage.getItem('couple_events');
-            events = savedEvents ? JSON.parse(savedEvents) : [
-                { id: 1, title: 'Shooting Collezione Autunno', type: 'Shooting', date: '2026-11-15', author: 'Lei' },
-                { id: 2, title: 'Trasferta di Lavoro Roma', type: 'Trasferta', date: '2026-11-18', author: 'Lei' }
-            ];
-        } catch (e) {
-            events = [];
+        // Stato iniziale simulato (in produzione sincronizzato via Backend/WebSocket)
+        let currentUser = 'User1';
+        let events = JSON.parse(localStorage.getItem('app_events')) || [
+            { id: 1, title: 'Cena insieme', date: new Date().toISOString().split('T')[0], owner: 'both' },
+            { id: 2, title: 'Palestra', date: new Date().toISOString().split('T')[0], owner: 'mine' }
+        ];
+        let tasks = JSON.parse(localStorage.getItem('app_tasks')) || [
+            { id: 1, title: 'Pagare bolletta', completed: false },
+            { id: 2, title: 'Acquistare caffè', completed: true }
+        ];
+        let notes = JSON.parse(localStorage.getItem('app_notes')) || [
+            { id: 1, title: 'Film da vedere', content: 'Inception, Interstellar', isPrivate: false, author: 'User1' }
+        ];
+
+        function switchUser(user) {
+            currentUser = user;
+            document.querySelectorAll('.user-btn').forEach(btn => btn.classList.toggle('active', btn.textContent.includes(user === 'User1' ? 'Tu' : 'altra')));
+            document.getElementById('welcomeTitle').textContent = user === 'User1' ? 'Ciao, Utente 1 👋' : 'Ciao, Utente 2 👋';
+            renderAll();
         }
 
-        function renderEvents() {
-            const listContainer = document.getElementById('eventsList');
-            listContainer.innerHTML = '';
-
-            if (!events || events.length === 0) {
-                listContainer.innerHTML = '<div class="empty-state">Nessun evento in programma. Aggiungi il primo!</div>';
-                return;
-            }
-
-            events.sort((a, b) => new Date(a.date) - new Date(b.date));
-
-            events.forEach(item => {
-                const card = document.createElement('div');
-                card.className = 'event-card';
-                
-                let formattedDate = item.date;
-                if(item.date) {
-                    const d = new Date(item.date);
-                    formattedDate = d.toLocaleDateString('it-IT', { day: 'numeric', month: 'short', year: 'numeric' });
-                }
-
-                card.innerHTML = `
-                    <div class="event-info">
-                        <h3>${item.title}</h3>
-                        <p>${formattedDate} • Inserito da: <strong>${item.author}</strong></p>
-                    </div>
-                    <span class="badge badge-${item.type}">${item.type}</span>
-                `;
-                listContainer.appendChild(card);
-            });
+        function switchTab(tabId, btn) {
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            btn.classList.add('active');
         }
 
         function addEvent() {
-            const titleInput = document.getElementById('eventTitle');
-            const typeInput = document.getElementById('eventType');
-            const dateInput = document.getElementById('eventDate');
-            const authorInput = document.getElementById('eventAuthor');
-
-            if (!titleInput.value.trim()) {
-                alert('Inserisci un titolo per l\'evento!');
-                return;
-            }
-
-            const newEvent = {
-                id: Date.now(),
-                title: titleInput.value,
-                type: typeInput.value,
-                date: dateInput.value || new Date().toISOString().split('T')[0],
-                author: authorInput.value
-            };
-
-            events.unshift(newEvent);
-            try {
-                localStorage.setItem('couple_events', JSON.stringify(events));
-            } catch (e) {
-                console.error(e);
-            }
-
-            titleInput.value = '';
-            dateInput.value = '';
-
-            renderEvents();
+            const title = document.getElementById('evTitle').value;
+            const date = document.getElementById('evDate').value;
+            const owner = document.getElementById('evOwner').value;
+            if(!title || !date) return alert('Compila tutti i campi');
+            
+            events.push({ id: Date.now(), title, date, owner });
+            localStorage.setItem('app_events', JSON.stringify(events));
+            document.getElementById('evTitle').value = '';
+            document.getElementById('evDate').value = '';
+            renderAll();
         }
 
-        renderEvents();
+        function addTask() {
+            const title = document.getElementById('taskTitle').value;
+            if(!title) return;
+            tasks.push({ id: Date.now(), title, completed: false });
+            localStorage.setItem('app_tasks', JSON.stringify(tasks));
+            document.getElementById('taskTitle').value = '';
+            renderAll();
+        }
+
+        function addNote() {
+            const title = document.getElementById('noteTitle').value;
+            const content = document.getElementById('noteContent').value;
+            const isPrivate = document.getElementById('notePrivate').value === 'true';
+            if(!title) return;
+            notes.push({ id: Date.now(), title, content, isPrivate, author: currentUser });
+            localStorage.setItem('app_notes', JSON.stringify(notes));
+            document.getElementById('noteTitle').value = '';
+            document.getElementById('noteContent').value = '';
+            renderAll();
+        }
+
+        function renderAll() {
+            // Render Home Today
+            const todayStr = new Date().toISOString().split('T')[0];
+            const todayList = document.getElementById('todayList');
+            const todayEvents = events.filter(e => e.date === todayStr);
+            todayList.innerHTML = todayEvents.length ? todayEvents.map(e => `
+                <div class="card">
+                    <div class="card-title">${e.title}</div>
+                    <span class="badge ${e.owner === 'both' ? 'badge-both' : 'badge-mine'}">${e.owner}</span>
+                </div>
+            `).join('') : '<div class="card card-sub">Nessun evento per oggi.</div>';
+
+            const todoListHome = document.getElementById('todoListHome');
+            const openTasks = tasks.filter(t => !t.completed);
+            todoListHome.innerHTML = openTasks.length ? openTasks.map(t => `
+                <div class="card" style="display:flex; justify-content:space-between; align-items:center;">
+                    <span>${t.title}</span>
+                    <input type="checkbox" onchange="toggleTask(${t.id})" ${t.completed ? 'checked' : ''}>
+                </div>
+            `).join('') : '<div class="card card-sub">Tutte le attività completate! 🎉</div>';
+
+            // Render Events
+            document.getElementById('eventsContainer').innerHTML = events.map(e => `
+                <div class="card">
+                    <div class="card-title">${e.title}</div>
+                    <div class="card-sub">Data: ${e.date}</div>
+                    <span class="badge badge-${e.owner}">${e.owner}</span>
+                </div>
+            `).join('');
+
+            // Render Tasks
+            document.getElementById('tasksContainer').innerHTML = tasks.map(t => `
+                <div class="card" style="display:flex; justify-content:space-between; align-items:center;">
+                    <span style="${t.completed ? 'text-decoration: line-through; color: var(--gray);' : ''}">${t.title}</span>
+                    <input type="checkbox" onchange="toggleTask(${t.id})" ${t.completed ? 'checked' : ''}>
+                </div>
+            `).join('');
+
+            // Render Notes (rispettando la privacy)
+            document.getElementById('notesContainer').innerHTML = notes
+                .filter(n => !n.isPrivate || n.author === currentUser)
+                .map(n => `
+                    <div class="card">
+                        <div class="card-title">${n.title} ${n.isPrivate ? '🔒' : '🤝'}</div>
+                        <p style="font-size: 13px; margin-top: 4px;">${n.content}</p>
+                        <div class="card-sub" style="margin-top: 8px;">Autore: ${n.author}</div>
+                    </div>
+                `).join('');
+        }
+
+        function toggleTask(id) {
+            tasks = tasks.map(t => t.id === id ? {...t, completed: !t.completed} : t);
+            localStorage.setItem('app_tasks', JSON.stringify(tasks));
+            renderAll();
+        }
+
+        renderAll();
     </script>
 </body>
 </html>
