@@ -96,8 +96,8 @@
         .badge-theirs { background: #FFE3E3; color: #C53030; }
         .badge-both { background: #FAF5FF; color: #6B46C1; }
 
-        /* Schermata Login */
-        #authScreen {
+        /* Schermata Ingresso Stanza */
+        #roomScreen {
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -188,19 +188,20 @@
 </head>
 <body>
 
-    <!-- SCHERMATA DI AUTENTICAZIONE -->
-    <div id="authScreen">
-        <h1 style="text-align: center; color: var(--primary); margin-bottom: 24px;">❤️ OurSync</h1>
+    <!-- SCHERMATA ACCESSO STANZA -->
+    <div id="roomScreen">
+        <h1 style="text-align: center; color: var(--primary); margin-bottom: 8px;">❤️ OurSync</h1>
+        <p style="text-align: center; color: var(--gray); font-size: 13px; margin-bottom: 24px;">Inserisci lo stesso ID Stanza su entrambi i telefoni per connettervi</p>
+        
         <div class="form-group">
-            <label>Email</label>
-            <input type="email" id="authEmail" placeholder="tua@email.com">
+            <label>ID Stanza Condivisa</label>
+            <input type="text" id="roomIdInput" placeholder="Es. nostra-casa-2026">
         </div>
         <div class="form-group">
-            <label>Password</label>
-            <input type="password" id="authPassword" placeholder="********">
+            <label>Il Tuo Nome</label>
+            <input type="text" id="userNameInput" placeholder="Es. Marco">
         </div>
-        <button class="primary-btn" onclick="handleLogin()">Accedi</button>
-        <button style="background: transparent; color: var(--gray); border: none; margin-top: 12px; cursor: pointer;" onclick="handleRegister()">Non hai un account? Registrati</button>
+        <button class="primary-btn" onclick="joinRoom()">Entra nella Stanza</button>
     </div>
 
     <!-- APP PRINCIPALE -->
@@ -208,9 +209,9 @@
         <header>
             <div>
                 <h1 id="welcomeTitle" style="font-size: 16px;">Ciao 👋</h1>
-                <p style="font-size: 11px; color: var(--gray);">La nostra vita in comune</p>
+                <p id="roomSub" style="font-size: 11px; color: var(--gray);"></p>
             </div>
-            <button onclick="logout()" style="background: var(--border); border: none; padding: 6px 12px; border-radius: 8px; font-size: 12px; cursor: pointer;">Esci</button>
+            <button onclick="leaveRoom()" style="background: var(--border); border: none; padding: 6px 12px; border-radius: 8px; font-size: 12px; cursor: pointer;">Esci</button>
         </header>
 
         <div class="container">
@@ -280,7 +281,7 @@
                         <label>Privacy</label>
                         <select id="notePrivate">
                             <option value="false">Condivisa</option>
-                            <option value="true">Privata</option>
+                            <option value="true">Privata (Visibile solo a te)</option>
                         </select>
                     </div>
                     <button class="primary-btn" onclick="addNote()">Salva Nota</button>
@@ -307,15 +308,12 @@
         </nav>
     </div>
 
-    <!-- LOGICA FIREBASE E APP -->
+    <!-- LOGICA FIREBASE E STANZA -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js";
-        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js"; // Nota: Auth e Firestore separati
-        // Correzione import Auth:
-        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-auth.js";
-        import { getFirestore, collection, addDoc, updateDoc, doc, onSnapshot, query, deleteDoc } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, updateDoc, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js";
 
-        // CONFIGURAZIONE FIREBASE (Sostituisci con le tue chiavi della console Firebase)
+        // CONFIGURAZIONE FIREBASE (Inserisci le tue chiavi di Firebase)
         const firebaseConfig = {
             apiKey: "INSERISCI_LA_TUA_API_KEY",
             authDomain: "tuo-progetto.firebaseapp.com",
@@ -326,10 +324,11 @@
         };
 
         const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
         const db = getFirestore(app);
 
-        let currentUser = null;
+        let currentRoomId = localStorage.getItem('oursync_room_id') || null;
+        let currentUserName = localStorage.getItem('oursync_user_name') || null;
+
         let events = [];
         let tasks = [];
         let notes = [];
@@ -337,101 +336,112 @@
         let unsubTasks = null;
         let unsubNotes = null;
 
-        // Gestione Auth UI
-        window.handleLogin = function() {
-            const email = document.getElementById('authEmail').value;
-            const pass = document.getElementById('authPassword').value;
-            signInWithEmailAndPassword(auth, email, pass).catch(err => alert(err.message));
-        }
+        window.joinRoom = function() {
+            const roomId = document.getElementById('roomIdInput').value.trim().toLowerCase();
+            const userName = document.getElementById('userNameInput').value.trim();
 
-        window.handleRegister = function() {
-            const email = document.getElementById('authEmail').value;
-            const pass = document.getElementById('authPassword').value;
-            createUserWithEmailAndPassword(auth, email, pass).catch(err => alert(err.message));
-        }
-
-        window.logout = function() {
-            signOut(auth);
-        }
-
-        onAuthStateChanged(auth, (user) => {
-            if (user) {
-                currentUser = user;
-                document.getElementById('authScreen').style.display = 'none';
-                document.getElementById('mainApp').style.display = 'block';
-                document.getElementById('welcomeTitle').textContent = `Ciao, ${user.email.split('@')[0]} 👋`;
-                initRealtimeListeners();
-            } else {
-                currentUser = null;
-                document.getElementById('authScreen').style.display = 'flex';
-                document.getElementById('mainApp').style.display = 'none';
-                if(unsubEvents) unsubEvents();
-                if(unsubTasks) unsubTasks();
-                if(unsubNotes) unsubNotes();
+            if (!roomId || !userName) {
+                return alert('Inserisci sia l\'ID stanza che il tuo nome');
             }
-        });
 
-        // Sincronizzazione in tempo reale con Firestore
+            currentRoomId = roomId;
+            currentUserName = userName;
+
+            localStorage.setItem('oursync_room_id', roomId);
+            localStorage.setItem('oursync_user_name', userName);
+
+            initApp();
+        };
+
+        window.leaveRoom = function() {
+            localStorage.removeItem('oursync_room_id');
+            localStorage.removeItem('oursync_user_name');
+            location.reload();
+        };
+
+        function initApp() {
+            if (currentRoomId && currentUserName) {
+                document.getElementById('roomScreen').style.display = 'none';
+                document.getElementById('mainApp').style.display = 'block';
+                document.getElementById('welcomeTitle').textContent = `Ciao, ${currentUserName} 👋`;
+                document.getElementById('roomSub').textContent = `Stanza: ${currentRoomId}`;
+                initRealtimeListeners();
+            }
+        }
+
         function initRealtimeListeners() {
-            // Ascolta Eventi
-            unsubEvents = onSnapshot(collection(db, "events"), (snapshot) => {
+            // Ascolta Eventi della stanza
+            unsubEvents = onSnapshot(collection(db, `rooms/${currentRoomId}/events`), (snapshot) => {
                 events = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                 renderAll();
             });
 
-            // Ascolta Task
-            unsubTasks = onSnapshot(collection(db, "tasks"), (snapshot) => {
+            // Ascolta Task della stanza
+            unsubTasks = onSnapshot(collection(db, `rooms/${currentRoomId}/tasks`), (snapshot) => {
                 tasks = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                 renderAll();
             });
 
-            // Ascolta Note
-            unsubNotes = onSnapshot(collection(db, "notes"), (snapshot) => {
+            // Ascolta Note della stanza
+            unsubNotes = onSnapshot(collection(db, `rooms/${currentRoomId}/notes`), (snapshot) => {
                 notes = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                 renderAll();
             });
         }
 
-        // Operazioni di Scrittura su Firestore
         window.addEvent = async function() {
             const title = document.getElementById('evTitle').value;
             const date = document.getElementById('evDate').value;
             const owner = document.getElementById('evOwner').value;
             if(!title || !date) return alert('Compila tutti i campi');
             
-            await addDoc(collection(db, "events"), { title, date, owner, createdBy: currentUser.uid });
+            await addDoc(collection(db, `rooms/${currentRoomId}/events`), { 
+                title, 
+                date, 
+                owner, 
+                createdBy: currentUserName 
+            });
             document.getElementById('evTitle').value = '';
             document.getElementById('evDate').value = '';
-        }
+        };
 
         window.addTask = async function() {
             const title = document.getElementById('taskTitle').value;
             if(!title) return;
-            await addDoc(collection(db, "tasks"), { title, completed: false, createdBy: currentUser.uid });
+            await addDoc(collection(db, `rooms/${currentRoomId}/tasks`), { 
+                title, 
+                completed: false, 
+                createdBy: currentUserName 
+            });
             document.getElementById('taskTitle').value = '';
-        }
+        };
 
         window.toggleTask = async function(id, currentStatus) {
-            const taskRef = doc(db, "tasks", id);
+            const taskRef = doc(db, `rooms/${currentRoomId}/tasks`, id);
             await updateDoc(taskRef, { completed: !currentStatus });
-        }
+        };
 
         window.addNote = async function() {
             const title = document.getElementById('noteTitle').value;
             const content = document.getElementById('noteContent').value;
             const isPrivate = document.getElementById('notePrivate').value === 'true';
             if(!title) return;
-            await addDoc(collection(db, "notes"), { title, content, isPrivate, author: currentUser.email });
+            await addDoc(collection(db, `rooms/${currentRoomId}/notes`), { 
+                title, 
+                content, 
+                isPrivate, 
+                author: currentUserName 
+            });
             document.getElementById('noteTitle').value = '';
             document.getElementById('noteContent').value = '';
-        }
+        };
 
         window.switchTab = function(tabId, btn) {
             document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
             document.getElementById(tabId).classList.add('active');
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
             btn.classList.add('active');
-        }
+        };
 
         function renderAll() {
             const todayStr = new Date().toISOString().split('T')[0];
@@ -459,7 +469,7 @@
             document.getElementById('eventsContainer').innerHTML = events.map(e => `
                 <div class="card">
                     <div class="card-title">${e.title}</div>
-                    <div class="card-sub">Data: ${e.date}</div>
+                    <div class="card-sub">Data: ${e.date} • Da: ${e.createdBy}</div>
                     <span class="badge badge-${e.owner}">${e.owner}</span>
                 </div>
             `).join('');
@@ -474,7 +484,7 @@
 
             // Notes
             document.getElementById('notesContainer').innerHTML = notes
-                .filter(n => !n.isPrivate || n.author === currentUser.email)
+                .filter(n => !n.isPrivate || n.author === currentUserName)
                 .map(n => `
                     <div class="card">
                         <div class="card-title">${n.title} ${n.isPrivate ? '🔒' : '🤝'}</div>
@@ -482,6 +492,11 @@
                         <div class="card-sub" style="margin-top: 8px;">Autore: ${n.author}</div>
                     </div>
                 `).join('');
+        }
+
+        // Auto-login se salvato in memoria locale
+        if (currentRoomId && currentUserName) {
+            initApp();
         }
     </script>
 </body>
