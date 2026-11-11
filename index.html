@@ -308,7 +308,7 @@
 
     <!-- SCHERMATA ACCESSO STANZA -->
     <div id="roomScreen">
-        <h1 style="text-align: center; color: var(--primary); margin-bottom: 8px;">❤️ OurSync v3.8</h1>
+        <h1 style="text-align: center; color: var(--primary); margin-bottom: 8px;">❤️ OurSync v3.9</h1>
         <p style="text-align: center; color: var(--gray); font-size: 13px; margin-bottom: 24px;">Inserisci lo stesso ID Stanza su entrambi i telefoni per connettervi</p>
         
         <div class="form-group">
@@ -398,24 +398,79 @@
 
             <!-- SEZIONE ATTIVITÀ -->
             <section id="tasks" class="section">
+                <h2>Nuova Task</h2>
+                <div class="card">
+                    <div class="form-group">
+                        <label>Cosa fare?</label>
+                        <input type="text" id="taskTitle" placeholder="Es. Fare la spesa">
+                    </div>
+                    <button class="primary-btn" onclick="addTask()">Aggiungi Task</button>
+                </div>
                 <h2>Lista Attività</h2>
                 <div id="tasksContainer"></div>
             </section>
 
             <!-- SEZIONE SPESA -->
             <section id="lists" class="section">
+                <h2>Nuovo Elemento Spesa</h2>
+                <div class="card">
+                    <div class="form-group">
+                        <label>Cosa comprare?</label>
+                        <input type="text" id="listItemTitle" placeholder="Es. Latte, Caffè...">
+                    </div>
+                    <button class="primary-btn" onclick="addListItem()">Aggiungi alla Lista</button>
+                </div>
                 <h2>Lista della Spesa Condivisa</h2>
                 <div id="listsContainer"></div>
             </section>
 
             <!-- SEZIONE SCADENZE -->
             <section id="deadlines" class="section">
+                <h2>Nuova Scadenza</h2>
+                <div class="card">
+                    <div class="form-group">
+                        <label>Nome Scadenza</label>
+                        <input type="text" id="dlTitle" placeholder="Es. Bollo auto">
+                    </div>
+                    <div class="form-group">
+                        <label>Data di Scadenza</label>
+                        <input type="date" id="dlDate">
+                    </div>
+                    <div class="form-group">
+                        <label>Assegnazione</label>
+                        <select id="dlOwner">
+                            <option value="both">Entrambi (In comune)</option>
+                            <option value="mine">Mio</option>
+                            <option value="theirs">Dell'altra persona</option>
+                        </select>
+                    </div>
+                    <button class="primary-btn" onclick="addDeadline()">Aggiungi Scadenza</button>
+                </div>
                 <h2>Tutte le Scadenze</h2>
                 <div id="deadlinesContainer"></div>
             </section>
 
             <!-- SEZIONE NOTE -->
             <section id="notes" class="section">
+                <h2>Nuova Nota</h2>
+                <div class="card">
+                    <div class="form-group">
+                        <label>Titolo Nota</label>
+                        <input type="text" id="noteTitle" placeholder="Titolo">
+                    </div>
+                    <div class="form-group">
+                        <label>Contenuto</label>
+                        <textarea id="noteContent" placeholder="Scrivi qui..."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Privacy</label>
+                        <select id="notePrivate">
+                            <option value="false">Condivisa</option>
+                            <option value="true">Privata (Visibile solo a te)</option>
+                        </select>
+                    </div>
+                    <button class="primary-btn" onclick="addNote()">Salva Nota</button>
+                </div>
                 <h2>Le Note</h2>
                 <div id="notesContainer"></div>
             </section>
@@ -809,7 +864,56 @@
             }
         };
 
-        // Funzioni CRUD
+        // Funzioni CRUD Form Interni
+        window.addTask = async function() {
+            const titleInput = document.getElementById('taskTitle');
+            if (!titleInput) return;
+            const title = titleInput.value.trim();
+            if(!title) return;
+            titleInput.value = '';
+            await addDoc(collection(db, `rooms/${currentRoomId}/tasks`), { title, completed: false, createdBy: currentUserName });
+            await logAction(`ha aggiunto la task "${title}"`);
+        };
+
+        window.addListItem = async function() {
+            const titleInput = document.getElementById('listItemTitle');
+            if (!titleInput) return;
+            const title = titleInput.value.trim();
+            if(!title) return;
+            titleInput.value = '';
+            await addDoc(collection(db, `rooms/${currentRoomId}/lists`), { title, completed: false, createdBy: currentUserName });
+        };
+
+        window.addDeadline = async function() {
+            const titleInput = document.getElementById('dlTitle');
+            const dateInput = document.getElementById('dlDate');
+            const ownerInput = document.getElementById('dlOwner');
+            if (!titleInput || !dateInput || !ownerInput) return;
+            const title = titleInput.value.trim();
+            const date = dateInput.value;
+            const owner = ownerInput.value;
+            if(!title || !date) return alert('Compila tutti i campi');
+            titleInput.value = '';
+            dateInput.value = '';
+            await addDoc(collection(db, `rooms/${currentRoomId}/deadlines`), { title, date, owner, createdBy: currentUserName });
+            await logAction(`ha aggiunto la scadenza "${title}"`);
+        };
+
+        window.addNote = async function() {
+            const titleInput = document.getElementById('noteTitle');
+            const contentInput = document.getElementById('noteContent');
+            const privateInput = document.getElementById('notePrivate');
+            if (!titleInput || !contentInput || !privateInput) return;
+            const title = titleInput.value.trim();
+            const content = contentInput.value;
+            const isPrivate = privateInput.value === 'true';
+            if(!title) return;
+            titleInput.value = '';
+            contentInput.value = '';
+            await addDoc(collection(db, `rooms/${currentRoomId}/notes`), { title, content, isPrivate, author: currentUserName });
+            await logAction(`ha creato una nota "${title}"`);
+        };
+
         window.deleteEvent = async (id, title) => {
             await deleteDoc(doc(db, `rooms/${currentRoomId}/events`, id));
             await logAction(`ha eliminato l'evento "${title}"`);
