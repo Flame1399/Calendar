@@ -164,7 +164,8 @@
             max-width: 600px;
             border-radius: 20px 20px 0 0;
             padding: 20px;
-            overflow: hidden;
+            overflow-y: auto;
+            max-height: 90vh;
             animation: slideUp 0.2s ease-out;
         }
 
@@ -307,7 +308,7 @@
 
     <!-- SCHERMATA ACCESSO STANZA -->
     <div id="roomScreen">
-        <h1 style="text-align: center; color: var(--primary); margin-bottom: 8px;">❤️ OurSync v3.6</h1>
+        <h1 style="text-align: center; color: var(--primary); margin-bottom: 8px;">❤️ OurSync v3.7</h1>
         <p style="text-align: center; color: var(--gray); font-size: 13px; margin-bottom: 24px;">Inserisci lo stesso ID Stanza su entrambi i telefoni per connettervi</p>
         
         <div class="form-group">
@@ -397,71 +398,24 @@
 
             <!-- SEZIONE ATTIVITÀ -->
             <section id="tasks" class="section">
-                <h2>Nuova Task</h2>
-                <div class="card">
-                    <div class="form-group">
-                        <label>Cosa fare?</label>
-                        <input type="text" id="taskTitle" placeholder="Es. Fare la spesa">
-                    </div>
-                    <button class="primary-btn" onclick="addTask()">Aggiungi Task</button>
-                </div>
                 <h2>Lista Attività</h2>
                 <div id="tasksContainer"></div>
             </section>
 
             <!-- SEZIONE SPESA -->
             <section id="lists" class="section">
-                <h2>Nuovo Elemento Spesa</h2>
-                <div class="card">
-                    <div class="form-group">
-                        <label>Cosa comprare?</label>
-                        <input type="text" id="listItemTitle" placeholder="Es. Latte, Caffè...">
-                    </div>
-                    <button class="primary-btn" onclick="addListItem()">Aggiungi alla Lista</button>
-                </div>
                 <h2>Lista della Spesa Condivisa</h2>
                 <div id="listsContainer"></div>
             </section>
 
             <!-- SEZIONE SCADENZE -->
             <section id="deadlines" class="section">
-                <h2>Nuova Scadenza</h2>
-                <div class="card">
-                    <div class="form-group">
-                        <label>Nome Scadenza</label>
-                        <input type="text" id="dlTitle" placeholder="Es. Bollo auto">
-                    </div>
-                    <div class="form-group">
-                        <label>Data di Scadenza</label>
-                        <input type="date" id="dlDate">
-                    </div>
-                    <button class="primary-btn" onclick="addDeadline()">Aggiungi Scadenza</button>
-                </div>
                 <h2>Tutte le Scadenze</h2>
                 <div id="deadlinesContainer"></div>
             </section>
 
             <!-- SEZIONE NOTE -->
             <section id="notes" class="section">
-                <h2>Nuova Nota</h2>
-                <div class="card">
-                    <div class="form-group">
-                        <label>Titolo Nota</label>
-                        <input type="text" id="noteTitle" placeholder="Titolo">
-                    </div>
-                    <div class="form-group">
-                        <label>Contenuto</label>
-                        <textarea id="noteContent" placeholder="Scrivi qui..."></textarea>
-                    </div>
-                    <div class="form-group">
-                        <label>Privacy</label>
-                        <select id="notePrivate">
-                            <option value="false">Condivisa</option>
-                            <option value="true">Privata (Visibile solo a te)</option>
-                        </select>
-                    </div>
-                    <button class="primary-btn" onclick="addNote()">Salva Nota</button>
-                </div>
                 <h2>Le Note</h2>
                 <div id="notesContainer"></div>
             </section>
@@ -497,6 +451,7 @@
             <div class="form-group">
                 <select id="quickType" onchange="toggleQuickFields()">
                     <option value="event">📅 Nuovo Evento</option>
+                    <option value="deadline">⏳ Nuova Scadenza</option>
                     <option value="task">✅ Nuova Task</option>
                     <option value="list">🛒 Elemento Spesa</option>
                     <option value="note">📝 Nuova Nota</option>
@@ -505,7 +460,9 @@
             <div class="form-group">
                 <input type="text" id="quickTitle" placeholder="Titolo...">
             </div>
-            <div id="quickEventFields">
+            
+            <!-- CAMPI PER EVENTO -->
+            <div id="quickEventFields" class="type-fields">
                 <div class="form-group">
                     <label>Data</label>
                     <input type="date" id="quickDate">
@@ -529,6 +486,23 @@
                     </select>
                 </div>
             </div>
+
+            <!-- CAMPI PER SCADENZA -->
+            <div id="quickDeadlineFields" class="type-fields" style="display: none;">
+                <div class="form-group">
+                    <label>Data di Scadenza</label>
+                    <input type="date" id="quickDlDate">
+                </div>
+                <div class="form-group">
+                    <label>Assegnazione</label>
+                    <select id="quickDlOwner">
+                        <option value="both">Entrambi (In comune)</option>
+                        <option value="mine">Mio</option>
+                        <option value="theirs">Dell'altra persona</option>
+                    </select>
+                </div>
+            </div>
+
             <button id="quickSaveBtn" class="primary-btn" onclick="saveQuickAdd()">Salva</button>
             <button style="background:none; border:none; color:var(--gray); width:100%; margin-top:8px; cursor:pointer;" onclick="closeQuickAdd()">Annulla</button>
         </div>
@@ -735,7 +709,9 @@
             isSavingQuick = false;
 
             document.getElementById('quickTitle').value = '';
-            document.getElementById('quickDate').value = selectedCalDate || new Date().toISOString().split('T')[0];
+            const todayStr = new Date().toISOString().split('T')[0];
+            document.getElementById('quickDate').value = selectedCalDate || todayStr;
+            document.getElementById('quickDlDate').value = todayStr;
             toggleQuickFields();
             document.getElementById('quickAddModal').style.display = 'flex';
         };
@@ -747,6 +723,7 @@
         window.toggleQuickFields = function() {
             const type = document.getElementById('quickType').value;
             document.getElementById('quickEventFields').style.display = (type === 'event') ? 'block' : 'none';
+            document.getElementById('quickDeadlineFields').style.display = (type === 'deadline') ? 'block' : 'none';
         };
 
         window.saveQuickAdd = async function() {
@@ -754,9 +731,6 @@
 
             const type = document.getElementById('quickType').value;
             const title = document.getElementById('quickTitle').value.trim();
-            const date = document.getElementById('quickDate').value;
-            const category = document.getElementById('quickCategory').value;
-            const owner = document.getElementById('quickOwner').value;
 
             if (!title) return alert('Inserisci un titolo');
 
@@ -768,10 +742,22 @@
 
             try {
                 if (type === 'event') {
+                    const date = document.getElementById('quickDate').value;
+                    const category = document.getElementById('quickCategory').value;
+                    const owner = document.getElementById('quickOwner').value;
                     await addDoc(collection(db, `rooms/${currentRoomId}/events`), {
                         title,
                         date: date || new Date().toISOString().split('T')[0],
                         category,
+                        owner,
+                        createdBy: currentUserName
+                    });
+                } else if (type === 'deadline') {
+                    const date = document.getElementById('quickDlDate').value;
+                    const owner = document.getElementById('quickDlOwner').value;
+                    await addDoc(collection(db, `rooms/${currentRoomId}/deadlines`), {
+                        title,
+                        date: date || new Date().toISOString().split('T')[0],
                         owner,
                         createdBy: currentUserName
                     });
@@ -834,27 +820,15 @@
         window.toggleListItem = async (id, status) => await updateDoc(doc(db, `rooms/${currentRoomId}/lists`, id), { completed: !status });
         window.deleteListItem = async (id) => await deleteDoc(doc(db, `rooms/${currentRoomId}/lists`, id));
 
-        window.addDeadline = async function() {
-            const title = document.getElementById('dlTitle').value.trim();
-            const date = document.getElementById('dlDate').value;
-            if(!title || !date) return alert('Compila tutti i campi');
-            document.getElementById('dlTitle').value = '';
-            document.getElementById('dlDate').value = '';
-            await addDoc(collection(db, `rooms/${currentRoomId}/deadlines`), { title, date, createdBy: currentUserName });
+        window.deleteDeadline = async (id, title) => {
+            await deleteDoc(doc(db, `rooms/${currentRoomId}/deadlines`, id));
+            await logAction(`ha eliminato la scadenza "${title}"`);
         };
-        window.deleteDeadline = async (id) => await deleteDoc(doc(db, `rooms/${currentRoomId}/deadlines`, id));
 
-        window.addNote = async function() {
-            const title = document.getElementById('noteTitle').value.trim();
-            const content = document.getElementById('noteContent').value;
-            const isPrivate = document.getElementById('notePrivate').value === 'true';
-            if(!title) return;
-            document.getElementById('noteTitle').value = '';
-            document.getElementById('noteContent').value = '';
-            await addDoc(collection(db, `rooms/${currentRoomId}/notes`), { title, content, isPrivate, author: currentUserName });
-            await logAction(`ha creato una nota "${title}"`);
+        window.deleteNote = async (id, title) => {
+            await deleteDoc(doc(db, `rooms/${currentRoomId}/notes`, id));
+            await logAction(`ha eliminato la nota "${title}"`);
         };
-        window.deleteNote = async (id) => await deleteDoc(doc(db, `rooms/${currentRoomId}/notes`, id));
 
         window.switchTab = function(tabId, btn) {
             document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
@@ -911,7 +885,8 @@
                             <button class="btn-icon" onclick="sendNudge('${d.title}')" title="Ricorda scadenza">🔔</button>
                         </div>
                         <div class="card-title">${d.title}</div>
-                        <div class="card-sub">Scadenza: ${d.date} (${diffDays >= 0 ? 'Tra ' + diffDays + ' giorni' : 'Scaduto'})</div>
+                        <div class="card-sub">Scadenza: ${formatItalianDate(d.date)} (${diffDays >= 0 ? 'Tra ' + diffDays + ' giorni' : 'Scaduto'})</div>
+                        <span class="badge badge-${d.owner || 'both'}">${d.owner || 'both'}</span>
                     </div>
                 `;
             }).join('') : '<div class="card card-sub">Nessuna scadenza imminente.</div>';
@@ -970,10 +945,11 @@
             // Deadlines View
             document.getElementById('deadlinesContainer').innerHTML = deadlines.filter(d => !searchQuery || d.title.toLowerCase().includes(searchQuery)).map(d => `
                 <div class="card">
-                    <button class="delete-btn" onclick="deleteDeadline('${d.id}')">Elimina</button>
+                    <button class="delete-btn" onclick="deleteDeadline('${d.id}', '${d.title}')">Elimina</button>
                     <button class="btn-icon" onclick="sendNudge('${d.title}')" title="Ricorda scadenza" style="float:right; margin-right:10px;">🔔</button>
                     <div class="card-title">${d.title}</div>
-                    <div class="card-sub">Data scadenza: ${d.date}</div>
+                    <div class="card-sub">Data scadenza: ${formatItalianDate(d.date)}</div>
+                    <span class="badge badge-${d.owner || 'both'}">${d.owner || 'both'}</span>
                 </div>
             `).join('');
 
@@ -982,7 +958,7 @@
                 .filter(n => (!n.isPrivate || n.author === currentUserName) && (!searchQuery || n.title.toLowerCase().includes(searchQuery) || n.content.toLowerCase().includes(searchQuery)))
                 .map(n => `
                     <div class="card">
-                        <button class="delete-btn" onclick="deleteNote('${n.id}')">Elimina</button>
+                        <button class="delete-btn" onclick="deleteNote('${n.id}', '${n.title}')">Elimina</button>
                         <button class="btn-icon" onclick="sendNudge('${n.title}')" title="Ricorda nota" style="float:right; margin-right:10px;">🔔</button>
                         <div class="card-title">${n.title} ${n.isPrivate ? '🔒' : '🤝'}</div>
                         <p style="font-size: 13px; margin-top: 4px;">${n.content}</p>
