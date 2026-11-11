@@ -308,7 +308,7 @@
 
     <!-- SCHERMATA ACCESSO STANZA -->
     <div id="roomScreen">
-        <h1 style="text-align: center; color: var(--primary); margin-bottom: 8px;">❤️ OurSync v3.7</h1>
+        <h1 style="text-align: center; color: var(--primary); margin-bottom: 8px;">❤️ OurSync v3.8</h1>
         <p style="text-align: center; color: var(--gray); font-size: 13px; margin-bottom: 24px;">Inserisci lo stesso ID Stanza su entrambi i telefoni per connettervi</p>
         
         <div class="form-group">
@@ -628,8 +628,10 @@
         };
 
         function formatItalianDate(dateStr) {
-            const [y, m, d] = dateStr.split('-');
-            return `${d}/${m}/${y}`;
+            if (!dateStr) return '';
+            const parts = dateStr.split('-');
+            if (parts.length !== 3) return dateStr;
+            return `${parts[2]}/${parts[1]}/${parts[0]}`;
         }
 
         function renderVisualCalendar() {
@@ -675,12 +677,14 @@
 
             const sectionTitle = document.getElementById('eventsSectionTitle');
             const clearBtn = document.getElementById('clearDateBtn');
-            if (selectedCalDate) {
-                sectionTitle.textContent = `Eventi del ${formatItalianDate(selectedCalDate)}`;
-                clearBtn.style.display = 'inline-block';
-            } else {
-                sectionTitle.textContent = 'Tutti gli Eventi';
-                clearBtn.style.display = 'none';
+            if (sectionTitle && clearBtn) {
+                if (selectedCalDate) {
+                    sectionTitle.textContent = `Eventi del ${formatItalianDate(selectedCalDate)}`;
+                    clearBtn.style.display = 'inline-block';
+                } else {
+                    sectionTitle.textContent = 'Tutti gli Eventi';
+                    clearBtn.style.display = 'none';
+                }
             }
         }
 
@@ -704,40 +708,53 @@
         // Modale Quick Add
         window.openQuickAdd = function() {
             const saveBtn = document.getElementById('quickSaveBtn');
-            saveBtn.disabled = false;
-            saveBtn.textContent = 'Salva';
+            if (saveBtn) {
+                saveBtn.disabled = false;
+                saveBtn.textContent = 'Salva';
+            }
             isSavingQuick = false;
 
-            document.getElementById('quickTitle').value = '';
+            const titleInput = document.getElementById('quickTitle');
+            if (titleInput) titleInput.value = '';
+
             const todayStr = new Date().toISOString().split('T')[0];
-            document.getElementById('quickDate').value = selectedCalDate || todayStr;
-            document.getElementById('quickDlDate').value = todayStr;
+            const qDate = document.getElementById('quickDate');
+            const qDlDate = document.getElementById('quickDlDate');
+            if (qDate) qDate.value = selectedCalDate || todayStr;
+            if (qDlDate) qDlDate.value = todayStr;
+
             toggleQuickFields();
-            document.getElementById('quickAddModal').style.display = 'flex';
+            const modal = document.getElementById('quickAddModal');
+            if (modal) modal.style.display = 'flex';
         };
 
         window.closeQuickAdd = function() {
-            document.getElementById('quickAddModal').style.display = 'none';
+            const modal = document.getElementById('quickAddModal');
+            if (modal) modal.style.display = 'none';
         };
 
         window.toggleQuickFields = function() {
             const type = document.getElementById('quickType').value;
-            document.getElementById('quickEventFields').style.display = (type === 'event') ? 'block' : 'none';
-            document.getElementById('quickDeadlineFields').style.display = (type === 'deadline') ? 'block' : 'none';
+            const eventFields = document.getElementById('quickEventFields');
+            const deadlineFields = document.getElementById('quickDeadlineFields');
+            if (eventFields) eventFields.style.display = (type === 'event') ? 'block' : 'none';
+            if (deadlineFields) deadlineFields.style.display = (type === 'deadline') ? 'block' : 'none';
         };
 
         window.saveQuickAdd = async function() {
             if (isSavingQuick) return;
 
             const type = document.getElementById('quickType').value;
-            const title = document.getElementById('quickTitle').value.trim();
+            const titleInput = document.getElementById('quickTitle');
+            if (!titleInput) return;
+            const title = titleInput.value.trim();
 
             if (!title) return alert('Inserisci un titolo');
 
             isSavingQuick = true;
             const saveBtn = document.getElementById('quickSaveBtn');
-            saveBtn.disabled = true;
-            document.getElementById('quickTitle').value = '';
+            if (saveBtn) saveBtn.disabled = true;
+            titleInput.value = '';
             closeQuickAdd();
 
             try {
@@ -788,7 +805,7 @@
                 alert("Errore durante il salvataggio su Firebase. Controlla la connessione o le chiavi API.");
             } finally {
                 isSavingQuick = false;
-                saveBtn.disabled = false;
+                if (saveBtn) saveBtn.disabled = false;
             }
         };
 
@@ -798,25 +815,12 @@
             await logAction(`ha eliminato l'evento "${title}"`);
         };
 
-        window.addTask = async function() {
-            const title = document.getElementById('taskTitle').value.trim();
-            if(!title) return;
-            document.getElementById('taskTitle').value = '';
-            await addDoc(collection(db, `rooms/${currentRoomId}/tasks`), { title, completed: false, createdBy: currentUserName });
-            await logAction(`ha aggiunto la task "${title}"`);
-        };
         window.toggleTask = async (id, status, title) => {
             await updateDoc(doc(db, `rooms/${currentRoomId}/tasks`, id), { completed: !status });
             await logAction(`ha aggiornato la task "${title}"`);
         };
         window.deleteTask = async (id) => await deleteDoc(doc(db, `rooms/${currentRoomId}/tasks`, id));
 
-        window.addListItem = async function() {
-            const title = document.getElementById('listItemTitle').value.trim();
-            if(!title) return;
-            document.getElementById('listItemTitle').value = '';
-            await addDoc(collection(db, `rooms/${currentRoomId}/lists`), { title, completed: false, createdBy: currentUserName });
-        };
         window.toggleListItem = async (id, status) => await updateDoc(doc(db, `rooms/${currentRoomId}/lists`, id), { completed: !status });
         window.deleteListItem = async (id) => await deleteDoc(doc(db, `rooms/${currentRoomId}/lists`, id));
 
@@ -832,75 +836,92 @@
 
         window.switchTab = function(tabId, btn) {
             document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-            document.getElementById(tabId).classList.add('active');
+            const targetSection = document.getElementById(tabId);
+            if (targetSection) targetSection.classList.add('active');
+            
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-            btn.classList.add('active');
+            if (btn) btn.classList.add('active');
+            
             if (tabId === 'calendar') renderVisualCalendar();
         };
 
         function renderAll() {
             const todayStr = new Date().toISOString().split('T')[0];
-            const searchQuery = document.getElementById('globalSearch').value.toLowerCase();
+            const searchInput = document.getElementById('globalSearch');
+            const searchQuery = searchInput ? searchInput.value.toLowerCase() : '';
             
             renderVisualCalendar();
 
             const todayEvents = events.filter(e => e.date === todayStr);
             const isFreeTogether = !todayEvents.some(e => e.owner === 'mine' || e.owner === 'theirs');
-            document.getElementById('freeTimeSuggestion').textContent = isFreeTogether 
-                ? 'Nessun impegno individuale registrato per oggi: siete entrambi liberi!' 
-                : 'Ci sono impegni individuali programmati per oggi. Verificare la sezione Calendario.';
+            
+            const freeTimeEl = document.getElementById('freeTimeSuggestion');
+            if (freeTimeEl) {
+                freeTimeEl.textContent = isFreeTogether 
+                    ? 'Nessun impegno individuale registrato per oggi: siete entrambi liberi!' 
+                    : 'Ci sono impegni individuali programmati per oggi. Verificare la sezione Calendario.';
+            }
 
             // Home Today Events
             const todayList = document.getElementById('todayList');
-            todayList.innerHTML = todayEvents.length ? todayEvents.map(e => `
-                <div class="card">
-                    <div class="action-btns">
-                        <button class="btn-icon" onclick="sendNudge('${e.title}')" title="Ricorda all'altro">🔔</button>
+            if (todayList) {
+                todayList.innerHTML = todayEvents.length ? todayEvents.map(e => `
+                    <div class="card">
+                        <div class="action-btns">
+                            <button class="btn-icon" onclick="sendNudge('${e.title}')" title="Ricorda all'altro">🔔</button>
+                        </div>
+                        <div class="card-title">${e.category || ''} ${e.title}</div>
+                        <span class="badge badge-${e.owner || 'both'}">${e.owner || 'both'}</span>
                     </div>
-                    <div class="card-title">${e.category || ''} ${e.title}</div>
-                    <span class="badge badge-${e.owner || 'both'}">${e.owner}</span>
-                </div>
-            `).join('') : '<div class="card card-sub">Nessun evento per oggi.</div>';
+                `).join('') : '<div class="card card-sub">Nessun evento per oggi.</div>';
+            }
 
             // Home Tasks
             const todoListHome = document.getElementById('todoListHome');
             const openTasks = tasks.filter(t => !t.completed);
-            todoListHome.innerHTML = openTasks.length ? openTasks.map(t => `
-                <div class="card" style="display:flex; justify-content:space-between; align-items:center;">
-                    <span>${t.title}</span>
-                    <div>
-                        <button class="btn-icon" onclick="sendNudge('${t.title}')" title="Ricorda all'altro" style="margin-right:8px;">🔔</button>
-                        <input type="checkbox" onchange="toggleTask('${t.id}', ${t.completed}, '${t.title}')" ${t.completed ? 'checked' : ''}>
+            if (todoListHome) {
+                todoListHome.innerHTML = openTasks.length ? openTasks.map(t => `
+                    <div class="card" style="display:flex; justify-content:space-between; align-items:center;">
+                        <span>${t.title}</span>
+                        <div>
+                            <button class="btn-icon" onclick="sendNudge('${t.title}')" title="Ricorda all'altro" style="margin-right:8px;">🔔</button>
+                            <input type="checkbox" onchange="toggleTask('${t.id}', ${t.completed}, '${t.title}')" ${t.completed ? 'checked' : ''}>
+                        </div>
                     </div>
-                </div>
-            `).join('') : '<div class="card card-sub">Tutte le attività completate! 🎉</div>';
+                `).join('') : '<div class="card card-sub">Tutte le attività completate! 🎉</div>';
+            }
 
             // Home Deadlines
             const deadlinesHome = document.getElementById('deadlinesHome');
-            deadlinesHome.innerHTML = deadlines.length ? deadlines.map(d => {
-                const diffDays = Math.ceil((new Date(d.date) - new Date(todayStr)) / (1000 * 60 * 60 * 24));
-                return `
-                    <div class="card">
-                        <div class="action-btns">
-                            <button class="btn-icon" onclick="sendNudge('${d.title}')" title="Ricorda scadenza">🔔</button>
+            if (deadlinesHome) {
+                deadlinesHome.innerHTML = deadlines.length ? deadlines.map(d => {
+                    const diffDays = Math.ceil((new Date(d.date) - new Date(todayStr)) / (1000 * 60 * 60 * 24));
+                    return `
+                        <div class="card">
+                            <div class="action-btns">
+                                <button class="btn-icon" onclick="sendNudge('${d.title}')" title="Ricorda scadenza">🔔</button>
+                            </div>
+                            <div class="card-title">${d.title}</div>
+                            <div class="card-sub">Scadenza: ${formatItalianDate(d.date)} (${diffDays >= 0 ? 'Tra ' + diffDays + ' giorni' : 'Scaduto'})</div>
+                            <span class="badge badge-${d.owner || 'both'}">${d.owner || 'both'}</span>
                         </div>
-                        <div class="card-title">${d.title}</div>
-                        <div class="card-sub">Scadenza: ${formatItalianDate(d.date)} (${diffDays >= 0 ? 'Tra ' + diffDays + ' giorni' : 'Scaduto'})</div>
-                        <span class="badge badge-${d.owner || 'both'}">${d.owner || 'both'}</span>
-                    </div>
-                `;
-            }).join('') : '<div class="card card-sub">Nessuna scadenza imminente.</div>';
+                    `;
+                }).join('') : '<div class="card card-sub">Nessuna scadenza imminente.</div>';
+            }
 
             // Activity Log
             const logContainer = document.getElementById('activityLogContainer');
-            logContainer.innerHTML = activityLogs.length ? activityLogs.slice(-5).reverse().map(l => `
-                <div class="card" style="padding: 10px; font-size: 12px; color: var(--text);">
-                    <span>${l.text} <span style="color:var(--gray); float:right;">${l.time}</span></span>
-                </div>
-            `).join('') : '<div class="card card-sub">Nessuna notifica recente.</div>';
+            if (logContainer) {
+                logContainer.innerHTML = activityLogs.length ? activityLogs.slice(-5).reverse().map(l => `
+                    <div class="card" style="padding: 10px; font-size: 12px; color: var(--text);">
+                        <span>${l.text} <span style="color:var(--gray); float:right;">${l.time}</span></span>
+                    </div>
+                `).join('') : '<div class="card card-sub">Nessuna notifica recente.</div>';
+            }
 
             // Calendar View
-            const filterValue = document.getElementById('eventFilter').value;
+            const eventFilterEl = document.getElementById('eventFilter');
+            const filterValue = eventFilterEl ? eventFilterEl.value : 'all';
             let filteredEvents = events.filter(e => {
                 if (selectedCalDate && e.date !== selectedCalDate) return false;
                 if (filterValue !== 'all' && e.owner !== filterValue) return false;
@@ -908,63 +929,79 @@
                 return true;
             });
             filteredEvents.sort((a, b) => new Date(a.date) - new Date(b.date));
-            document.getElementById('eventsContainer').innerHTML = filteredEvents.length ? filteredEvents.map(e => `
-                <div class="card">
-                    <button class="delete-btn" onclick="deleteEvent('${e.id}', '${e.title}')">Elimina</button>
-                    <button class="btn-icon" onclick="sendNudge('${e.title}')" title="Ricorda all'altro" style="float:right; margin-right:10px;">🔔</button>
-                    <div class="card-title">${e.category || ''} ${e.title}</div>
-                    <div class="card-sub">Data: ${formatItalianDate(e.date)} • Inserito da: ${e.createdBy}</div>
-                    <span class="badge badge-${e.owner}">${e.owner}</span>
-                </div>
-            `).join('') : `<div class="card card-sub">${selectedCalDate ? 'Nessun evento in programma per questo giorno.' : 'Nessun evento trovato.'}</div>`;
+            
+            const eventsContainer = document.getElementById('eventsContainer');
+            if (eventsContainer) {
+                eventsContainer.innerHTML = filteredEvents.length ? filteredEvents.map(e => `
+                    <div class="card">
+                        <button class="delete-btn" onclick="deleteEvent('${e.id}', '${e.title}')">Elimina</button>
+                        <button class="btn-icon" onclick="sendNudge('${e.title}')" title="Ricorda all'altro" style="float:right; margin-right:10px;">🔔</button>
+                        <div class="card-title">${e.category || ''} ${e.title}</div>
+                        <div class="card-sub">Data: ${formatItalianDate(e.date)} • Inserito da: ${e.createdBy}</div>
+                        <span class="badge badge-${e.owner || 'both'}">${e.owner || 'both'}</span>
+                    </div>
+                `).join('') : `<div class="card card-sub">${selectedCalDate ? 'Nessun evento in programma per questo giorno.' : 'Nessun evento trovato.'}</div>`;
+            }
 
             // Tasks View
-            document.getElementById('tasksContainer').innerHTML = tasks.filter(t => !searchQuery || t.title.toLowerCase().includes(searchQuery)).map(t => `
-                <div class="card" style="display:flex; justify-content:space-between; align-items:center;">
-                    <span style="${t.completed ? 'text-decoration: line-through; color: var(--gray);' : ''}">${t.title}</span>
-                    <div>
-                        <button class="btn-icon" onclick="sendNudge('${t.title}')" title="Ricorda task" style="margin-right:8px;">🔔</button>
-                        <input type="checkbox" onchange="toggleTask('${t.id}', ${t.completed}, '${t.title}')" ${t.completed ? 'checked' : ''} style="margin-right: 10px;">
-                        <button onclick="deleteTask('${t.id}')" style="background:none; border:none; color:var(--danger); cursor:pointer;">🗑️</button>
+            const tasksContainer = document.getElementById('tasksContainer');
+            if (tasksContainer) {
+                tasksContainer.innerHTML = tasks.filter(t => !searchQuery || t.title.toLowerCase().includes(searchQuery)).map(t => `
+                    <div class="card" style="display:flex; justify-content:space-between; align-items:center;">
+                        <span style="${t.completed ? 'text-decoration: line-through; color: var(--gray);' : ''}">${t.title}</span>
+                        <div>
+                            <button class="btn-icon" onclick="sendNudge('${t.title}')" title="Ricorda task" style="margin-right:8px;">🔔</button>
+                            <input type="checkbox" onchange="toggleTask('${t.id}', ${t.completed}, '${t.title}')" ${t.completed ? 'checked' : ''} style="margin-right: 10px;">
+                            <button onclick="deleteTask('${t.id}')" style="background:none; border:none; color:var(--danger); cursor:pointer;">🗑️</button>
+                        </div>
                     </div>
-                </div>
-            `).join('');
+                `).join('') || '<div class="card card-sub">Nessuna attività inserita.</div>';
+            }
 
-            // Lists View
-            document.getElementById('listsContainer').innerHTML = lists.filter(l => !searchQuery || l.title.toLowerCase().includes(searchQuery)).map(l => `
-                <div class="card" style="display:flex; justify-content:space-between; align-items:center;">
-                    <span style="${l.completed ? 'text-decoration: line-through; color: var(--gray);' : ''}">${l.title}</span>
-                    <div>
-                        <button class="btn-icon" onclick="sendNudge('${l.title}')" title="Ricorda elemento" style="margin-right:8px;">🔔</button>
-                        <input type="checkbox" onchange="toggleListItem('${l.id}', ${l.completed})" ${l.completed ? 'checked' : ''} style="margin-right: 10px;">
-                        <button onclick="deleteListItem('${l.id}')" style="background:none; border:none; color:var(--danger); cursor:pointer;">🗑️</button>
+            // Lists View (Spesa)
+            const listsContainer = document.getElementById('listsContainer');
+            if (listsContainer) {
+                listsContainer.innerHTML = lists.filter(l => !searchQuery || l.title.toLowerCase().includes(searchQuery)).map(l => `
+                    <div class="card" style="display:flex; justify-content:space-between; align-items:center;">
+                        <span style="${l.completed ? 'text-decoration: line-through; color: var(--gray);' : ''}">${l.title}</span>
+                        <div>
+                            <button class="btn-icon" onclick="sendNudge('${l.title}')" title="Ricorda elemento" style="margin-right:8px;">🔔</button>
+                            <input type="checkbox" onchange="toggleListItem('${l.id}', ${l.completed})" ${l.completed ? 'checked' : ''} style="margin-right: 10px;">
+                            <button onclick="deleteListItem('${l.id}')" style="background:none; border:none; color:var(--danger); cursor:pointer;">🗑️</button>
+                        </div>
                     </div>
-                </div>
-            `).join('');
+                `).join('') || '<div class="card card-sub">Lista della spesa vuota.</div>';
+            }
 
             // Deadlines View
-            document.getElementById('deadlinesContainer').innerHTML = deadlines.filter(d => !searchQuery || d.title.toLowerCase().includes(searchQuery)).map(d => `
-                <div class="card">
-                    <button class="delete-btn" onclick="deleteDeadline('${d.id}', '${d.title}')">Elimina</button>
-                    <button class="btn-icon" onclick="sendNudge('${d.title}')" title="Ricorda scadenza" style="float:right; margin-right:10px;">🔔</button>
-                    <div class="card-title">${d.title}</div>
-                    <div class="card-sub">Data scadenza: ${formatItalianDate(d.date)}</div>
-                    <span class="badge badge-${d.owner || 'both'}">${d.owner || 'both'}</span>
-                </div>
-            `).join('');
+            const deadlinesContainer = document.getElementById('deadlinesContainer');
+            if (deadlinesContainer) {
+                deadlinesContainer.innerHTML = deadlines.filter(d => !searchQuery || d.title.toLowerCase().includes(searchQuery)).map(d => `
+                    <div class="card">
+                        <button class="delete-btn" onclick="deleteDeadline('${d.id}', '${d.title}')">Elimina</button>
+                        <button class="btn-icon" onclick="sendNudge('${d.title}')" title="Ricorda scadenza" style="float:right; margin-right:10px;">🔔</button>
+                        <div class="card-title">${d.title}</div>
+                        <div class="card-sub">Data scadenza: ${formatItalianDate(d.date)}</div>
+                        <span class="badge badge-${d.owner || 'both'}">${d.owner || 'both'}</span>
+                    </div>
+                `).join('') || '<div class="card card-sub">Nessuna scadenza inserita.</div>';
+            }
 
             // Notes View
-            document.getElementById('notesContainer').innerHTML = notes
-                .filter(n => (!n.isPrivate || n.author === currentUserName) && (!searchQuery || n.title.toLowerCase().includes(searchQuery) || n.content.toLowerCase().includes(searchQuery)))
-                .map(n => `
-                    <div class="card">
-                        <button class="delete-btn" onclick="deleteNote('${n.id}', '${n.title}')">Elimina</button>
-                        <button class="btn-icon" onclick="sendNudge('${n.title}')" title="Ricorda nota" style="float:right; margin-right:10px;">🔔</button>
-                        <div class="card-title">${n.title} ${n.isPrivate ? '🔒' : '🤝'}</div>
-                        <p style="font-size: 13px; margin-top: 4px;">${n.content}</p>
-                        <div class="card-sub" style="margin-top: 8px;">Autore: ${n.author}</div>
-                    </div>
-                `).join('');
+            const notesContainer = document.getElementById('notesContainer');
+            if (notesContainer) {
+                notesContainer.innerHTML = notes
+                    .filter(n => (!n.isPrivate || n.author === currentUserName) && (!searchQuery || n.title.toLowerCase().includes(searchQuery) || n.content.toLowerCase().includes(searchQuery)))
+                    .map(n => `
+                        <div class="card">
+                            <button class="delete-btn" onclick="deleteNote('${n.id}', '${n.title}')">Elimina</button>
+                            <button class="btn-icon" onclick="sendNudge('${n.title}')" title="Ricorda nota" style="float:right; margin-right:10px;">🔔</button>
+                            <div class="card-title">${n.title} ${n.isPrivate ? '🔒' : '🤝'}</div>
+                            <p style="font-size: 13px; margin-top: 4px;">${n.content}</p>
+                            <div class="card-sub" style="margin-top: 8px;">Autore: ${n.author}</div>
+                        </div>
+                    `).join('') || '<div class="card card-sub">Nessuna nota presente.</div>';
+            }
         }
 
         if (currentRoomId && currentUserName) {
