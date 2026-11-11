@@ -164,6 +164,7 @@
             max-width: 600px;
             border-radius: 20px 20px 0 0;
             padding: 20px;
+            overflow: hidden;
             animation: slideUp 0.2s ease-out;
         }
 
@@ -207,9 +208,26 @@
         .nav-item.active { color: var(--primary); font-weight: 600; }
         .nav-item span.icon { font-size: 16px; }
 
-        .form-group { margin-bottom: 12px; }
+        .form-group { margin-bottom: 12px; width: 100%; }
         label { display: block; font-size: 11px; font-weight: 600; color: var(--gray); margin-bottom: 4px; text-transform: uppercase; }
-        input, select, textarea { width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 8px; font-size: 14px; outline: none; background: var(--bg); }
+        input, select, textarea { 
+            display: block;
+            width: 100%; 
+            max-width: 100%;
+            min-width: 0;
+            padding: 10px; 
+            border: 1px solid var(--border); 
+            border-radius: 8px; 
+            font-size: 14px; 
+            outline: none; 
+            background: var(--bg);
+            color: var(--text);
+        }
+        input[type="date"] {
+            -webkit-appearance: none;
+            appearance: none;
+            min-height: 40px;
+        }
         button.primary-btn { width: 100%; background: var(--primary); color: var(--white); border: none; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer; margin-top: 8px; }
         button.primary-btn:disabled { opacity: 0.6; cursor: not-allowed; }
 
@@ -289,7 +307,7 @@
 
     <!-- SCHERMATA ACCESSO STANZA -->
     <div id="roomScreen">
-        <h1 style="text-align: center; color: var(--primary); margin-bottom: 8px;">❤️ OurSync v3.5</h1>
+        <h1 style="text-align: center; color: var(--primary); margin-bottom: 8px;">❤️ OurSync v3.6</h1>
         <p style="text-align: center; color: var(--gray); font-size: 13px; margin-bottom: 24px;">Inserisci lo stesso ID Stanza su entrambi i telefoni per connettervi</p>
         
         <div class="form-group">
@@ -709,7 +727,7 @@
             alert(`Promemoria inviato in tempo reale! L'altra persona lo vedrà subito nel centro notifiche.`);
         };
 
-        // Modale Quick Add con chiusura immediata e protezione doppio clic
+        // Modale Quick Add
         window.openQuickAdd = function() {
             const saveBtn = document.getElementById('quickSaveBtn');
             saveBtn.disabled = false;
@@ -742,7 +760,6 @@
 
             if (!title) return alert('Inserisci un titolo');
 
-            // Blocca invii multipli e chiude subito il modale
             isSavingQuick = true;
             const saveBtn = document.getElementById('quickSaveBtn');
             saveBtn.disabled = true;
