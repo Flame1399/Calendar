@@ -211,6 +211,7 @@
         label { display: block; font-size: 11px; font-weight: 600; color: var(--gray); margin-bottom: 4px; text-transform: uppercase; }
         input, select, textarea { width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 8px; font-size: 14px; outline: none; background: var(--bg); }
         button.primary-btn { width: 100%; background: var(--primary); color: var(--white); border: none; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer; margin-top: 8px; }
+        button.primary-btn:disabled { opacity: 0.6; cursor: not-allowed; }
 
         /* STILI CALENDARIO VISIVO */
         .calendar-header {
@@ -288,7 +289,7 @@
 
     <!-- SCHERMATA ACCESSO STANZA -->
     <div id="roomScreen">
-        <h1 style="text-align: center; color: var(--primary); margin-bottom: 8px;">❤️ OurSync v3.4</h1>
+        <h1 style="text-align: center; color: var(--primary); margin-bottom: 8px;">❤️ OurSync v3.5</h1>
         <p style="text-align: center; color: var(--gray); font-size: 13px; margin-bottom: 24px;">Inserisci lo stesso ID Stanza su entrambi i telefoni per connettervi</p>
         
         <div class="form-group">
@@ -342,7 +343,6 @@
 
             <!-- SEZIONE CALENDARIO -->
             <section id="calendar" class="section">
-                <!-- 1. GRIGLIA VISIVA -->
                 <div class="card" style="padding: 12px;">
                     <div class="calendar-header">
                         <button class="btn-icon" onclick="changeMonth(-1)" style="font-size: 18px;">◀</button>
@@ -362,7 +362,6 @@
                     <div id="calendarDaysGrid" class="calendar-grid"></div>
                 </div>
 
-                <!-- 2. LISTA EVENTI SUBITO VISIBILE SOTTO IL CALENDARIO -->
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; gap: 8px;">
                     <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
                         <h2 id="eventsSectionTitle" style="margin-bottom: 0; font-size: 16px;">Tutti gli Eventi</h2>
@@ -512,7 +511,7 @@
                     </select>
                 </div>
             </div>
-            <button class="primary-btn" onclick="saveQuickAdd()">Salva</button>
+            <button id="quickSaveBtn" class="primary-btn" onclick="saveQuickAdd()">Salva</button>
             <button style="background:none; border:none; color:var(--gray); width:100%; margin-top:8px; cursor:pointer;" onclick="closeQuickAdd()">Annulla</button>
         </div>
     </div>
@@ -544,9 +543,9 @@
         let notes = [];
         let activityLogs = [];
 
-        // Stato del calendario visivo
         let currentCalDate = new Date();
         let selectedCalDate = null;
+        let isSavingQuick = false;
 
         let unsubEvents, unsubTasks, unsubLists, unsubDeadlines, unsubNotes, unsubLogs;
 
@@ -694,10 +693,14 @@
         }
 
         async function logAction(actionText) {
-            await addDoc(collection(db, `rooms/${currentRoomId}/logs`), {
-                text: `${currentUserName} ${actionText}`,
-                time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-            });
+            try {
+                await addDoc(collection(db, `rooms/${currentRoomId}/logs`), {
+                    text: `${currentUserName} ${actionText}`,
+                    time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+                });
+            } catch (err) {
+                console.error("Errore log:", err);
+            }
         }
 
         // Funzione Promemoria Real-Time ("Ricorda all'altro")
@@ -706,45 +709,84 @@
             alert(`Promemoria inviato in tempo reale! L'altra persona lo vedrà subito nel centro notifiche.`);
         };
 
-        // Modale Quick Add
+        // Modale Quick Add con chiusura immediata e protezione doppio clic
         window.openQuickAdd = function() {
+            const saveBtn = document.getElementById('quickSaveBtn');
+            saveBtn.disabled = false;
+            saveBtn.textContent = 'Salva';
+            isSavingQuick = false;
+
+            document.getElementById('quickTitle').value = '';
             document.getElementById('quickDate').value = selectedCalDate || new Date().toISOString().split('T')[0];
             toggleQuickFields();
             document.getElementById('quickAddModal').style.display = 'flex';
         };
-        window.closeQuickAdd = function() { document.getElementById('quickAddModal').style.display = 'none'; };
+
+        window.closeQuickAdd = function() {
+            document.getElementById('quickAddModal').style.display = 'none';
+        };
+
         window.toggleQuickFields = function() {
             const type = document.getElementById('quickType').value;
             document.getElementById('quickEventFields').style.display = (type === 'event') ? 'block' : 'none';
         };
+
         window.saveQuickAdd = async function() {
+            if (isSavingQuick) return;
+
             const type = document.getElementById('quickType').value;
-            const title = document.getElementById('quickTitle').value;
+            const title = document.getElementById('quickTitle').value.trim();
             const date = document.getElementById('quickDate').value;
             const category = document.getElementById('quickCategory').value;
             const owner = document.getElementById('quickOwner').value;
 
-            if(!title) return alert('Inserisci un titolo');
+            if (!title) return alert('Inserisci un titolo');
 
-            if(type === 'event') {
-                await addDoc(collection(db, `rooms/${currentRoomId}/events`), {
-                    title,
-                    date: date || new Date().toISOString().split('T')[0],
-                    category,
-                    owner,
-                    createdBy: currentUserName
-                });
-            } else if(type === 'task') {
-                await addDoc(collection(db, `rooms/${currentRoomId}/tasks`), { title, completed: false, createdBy: currentUserName });
-            } else if(type === 'list') {
-                await addDoc(collection(db, `rooms/${currentRoomId}/lists`), { title, completed: false, createdBy: currentUserName });
-            } else if(type === 'note') {
-                await addDoc(collection(db, `rooms/${currentRoomId}/notes`), { title, content: '', isPrivate: false, author: currentUserName });
-            }
-
-            await logAction(`ha aggiunto rapidamente "${title}"`);
+            // Blocca invii multipli e chiude subito il modale
+            isSavingQuick = true;
+            const saveBtn = document.getElementById('quickSaveBtn');
+            saveBtn.disabled = true;
             document.getElementById('quickTitle').value = '';
             closeQuickAdd();
+
+            try {
+                if (type === 'event') {
+                    await addDoc(collection(db, `rooms/${currentRoomId}/events`), {
+                        title,
+                        date: date || new Date().toISOString().split('T')[0],
+                        category,
+                        owner,
+                        createdBy: currentUserName
+                    });
+                } else if (type === 'task') {
+                    await addDoc(collection(db, `rooms/${currentRoomId}/tasks`), {
+                        title,
+                        completed: false,
+                        createdBy: currentUserName
+                    });
+                } else if (type === 'list') {
+                    await addDoc(collection(db, `rooms/${currentRoomId}/lists`), {
+                        title,
+                        completed: false,
+                        createdBy: currentUserName
+                    });
+                } else if (type === 'note') {
+                    await addDoc(collection(db, `rooms/${currentRoomId}/notes`), {
+                        title,
+                        content: '',
+                        isPrivate: false,
+                        author: currentUserName
+                    });
+                }
+
+                await logAction(`ha aggiunto rapidamente "${title}"`);
+            } catch (err) {
+                console.error("Errore salvataggio:", err);
+                alert("Errore durante il salvataggio su Firebase. Controlla la connessione o le chiavi API.");
+            } finally {
+                isSavingQuick = false;
+                saveBtn.disabled = false;
+            }
         };
 
         // Funzioni CRUD
@@ -754,11 +796,11 @@
         };
 
         window.addTask = async function() {
-            const title = document.getElementById('taskTitle').value;
+            const title = document.getElementById('taskTitle').value.trim();
             if(!title) return;
+            document.getElementById('taskTitle').value = '';
             await addDoc(collection(db, `rooms/${currentRoomId}/tasks`), { title, completed: false, createdBy: currentUserName });
             await logAction(`ha aggiunto la task "${title}"`);
-            document.getElementById('taskTitle').value = '';
         };
         window.toggleTask = async (id, status, title) => {
             await updateDoc(doc(db, `rooms/${currentRoomId}/tasks`, id), { completed: !status });
@@ -767,33 +809,33 @@
         window.deleteTask = async (id) => await deleteDoc(doc(db, `rooms/${currentRoomId}/tasks`, id));
 
         window.addListItem = async function() {
-            const title = document.getElementById('listItemTitle').value;
+            const title = document.getElementById('listItemTitle').value.trim();
             if(!title) return;
-            await addDoc(collection(db, `rooms/${currentRoomId}/lists`), { title, completed: false, createdBy: currentUserName });
             document.getElementById('listItemTitle').value = '';
+            await addDoc(collection(db, `rooms/${currentRoomId}/lists`), { title, completed: false, createdBy: currentUserName });
         };
         window.toggleListItem = async (id, status) => await updateDoc(doc(db, `rooms/${currentRoomId}/lists`, id), { completed: !status });
         window.deleteListItem = async (id) => await deleteDoc(doc(db, `rooms/${currentRoomId}/lists`, id));
 
         window.addDeadline = async function() {
-            const title = document.getElementById('dlTitle').value;
+            const title = document.getElementById('dlTitle').value.trim();
             const date = document.getElementById('dlDate').value;
             if(!title || !date) return alert('Compila tutti i campi');
-            await addDoc(collection(db, `rooms/${currentRoomId}/deadlines`), { title, date, createdBy: currentUserName });
             document.getElementById('dlTitle').value = '';
             document.getElementById('dlDate').value = '';
+            await addDoc(collection(db, `rooms/${currentRoomId}/deadlines`), { title, date, createdBy: currentUserName });
         };
         window.deleteDeadline = async (id) => await deleteDoc(doc(db, `rooms/${currentRoomId}/deadlines`, id));
 
         window.addNote = async function() {
-            const title = document.getElementById('noteTitle').value;
+            const title = document.getElementById('noteTitle').value.trim();
             const content = document.getElementById('noteContent').value;
             const isPrivate = document.getElementById('notePrivate').value === 'true';
             if(!title) return;
-            await addDoc(collection(db, `rooms/${currentRoomId}/notes`), { title, content, isPrivate, author: currentUserName });
-            await logAction(`ha creato una nota "${title}"`);
             document.getElementById('noteTitle').value = '';
             document.getElementById('noteContent').value = '';
+            await addDoc(collection(db, `rooms/${currentRoomId}/notes`), { title, content, isPrivate, author: currentUserName });
+            await logAction(`ha creato una nota "${title}"`);
         };
         window.deleteNote = async (id) => await deleteDoc(doc(db, `rooms/${currentRoomId}/notes`, id));
 
