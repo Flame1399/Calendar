@@ -217,7 +217,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 12px;
+            margin-bottom: 10px;
         }
 
         .calendar-grid {
@@ -231,11 +231,11 @@
             font-size: 11px;
             font-weight: 700;
             color: var(--gray);
-            padding-bottom: 6px;
+            padding-bottom: 4px;
         }
 
         .cal-cell {
-            aspect-ratio: 1;
+            height: 40px;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -268,7 +268,7 @@
         .cal-dots {
             display: flex;
             gap: 2px;
-            margin-top: 3px;
+            margin-top: 2px;
             height: 5px;
         }
 
@@ -288,7 +288,7 @@
 
     <!-- SCHERMATA ACCESSO STANZA -->
     <div id="roomScreen">
-        <h1 style="text-align: center; color: var(--primary); margin-bottom: 8px;">❤️ OurSync v3.2</h1>
+        <h1 style="text-align: center; color: var(--primary); margin-bottom: 8px;">❤️ OurSync v3.3</h1>
         <p style="text-align: center; color: var(--gray); font-size: 13px; margin-bottom: 24px;">Inserisci lo stesso ID Stanza su entrambi i telefoni per connettervi</p>
         
         <div class="form-group">
@@ -342,8 +342,8 @@
 
             <!-- SEZIONE CALENDARIO -->
             <section id="calendar" class="section">
-                <h2>Calendario Mensile</h2>
-                <div class="card">
+                <!-- 1. GRIGLIA VISIVA -->
+                <div class="card" style="padding: 12px;">
                     <div class="calendar-header">
                         <button class="btn-icon" onclick="changeMonth(-1)" style="font-size: 18px;">◀</button>
                         <strong id="calMonthYear" style="font-size: 15px; text-transform: capitalize;"></strong>
@@ -360,13 +360,24 @@
                         <div class="cal-day-name">Dom</div>
                     </div>
                     <div id="calendarDaysGrid" class="calendar-grid"></div>
-                    
-                    <div id="selectedDateBanner" style="display: none; margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--border); justify-content: space-between; align-items: center; font-size: 12px;">
-                        <span id="selectedDateLabel"></span>
-                        <button onclick="clearDateFilter()" style="background: none; border: none; color: var(--primary); font-weight: bold; cursor: pointer;">Mostra tutti</button>
-                    </div>
                 </div>
 
+                <!-- 2. LISTA EVENTI SUBITO VISIBILE SOTTO IL CALENDARIO -->
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; gap: 8px;">
+                    <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                        <h2 id="eventsSectionTitle" style="margin-bottom: 0; font-size: 16px;">Tutti gli Eventi</h2>
+                        <button id="clearDateBtn" onclick="clearDateFilter()" style="display: none; background: var(--primary-light); color: var(--primary); border: none; padding: 3px 8px; border-radius: 8px; font-size: 11px; font-weight: bold; cursor: pointer;">✕ Vedi tutti</button>
+                    </div>
+                    <select id="eventFilter" onchange="renderAll()" style="width: auto; padding: 4px 8px; font-size: 12px;">
+                        <option value="all">Tutti</option>
+                        <option value="mine">Miei</option>
+                        <option value="theirs">Dell'altra persona</option>
+                        <option value="both">In comune</option>
+                    </select>
+                </div>
+                <div id="eventsContainer" style="margin-bottom: 20px;"></div>
+
+                <!-- 3. MODULO AGGIUNTA RAPIDA EVENTO -->
                 <h2>Nuovo Evento</h2>
                 <div class="card">
                     <div class="form-group">
@@ -397,17 +408,6 @@
                     </div>
                     <button class="primary-btn" onclick="addEvent()">Aggiungi Evento</button>
                 </div>
-
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-                    <h2>Tutti gli Eventi</h2>
-                    <select id="eventFilter" onchange="renderAll()" style="width: auto; padding: 4px 8px; font-size: 12px;">
-                        <option value="all">Tutti</option>
-                        <option value="mine">Miei</option>
-                        <option value="theirs">Dell'altra persona</option>
-                        <option value="both">In comune</option>
-                    </select>
-                </div>
-                <div id="eventsContainer"></div>
             </section>
 
             <!-- SEZIONE ATTIVITÀ -->
@@ -648,6 +648,11 @@
             renderAll();
         };
 
+        function formatItalianDate(dateStr) {
+            const [y, m, d] = dateStr.split('-');
+            return `${d}/${m}/${y}`;
+        }
+
         function renderVisualCalendar() {
             const grid = document.getElementById('calendarDaysGrid');
             const monthLabel = document.getElementById('calMonthYear');
@@ -689,12 +694,15 @@
 
             grid.innerHTML = html;
 
-            const banner = document.getElementById('selectedDateBanner');
+            // Aggiorna l'intestazione della lista eventi subito sotto il calendario
+            const sectionTitle = document.getElementById('eventsSectionTitle');
+            const clearBtn = document.getElementById('clearDateBtn');
             if (selectedCalDate) {
-                banner.style.display = 'flex';
-                document.getElementById('selectedDateLabel').textContent = `Filtro attivo: ${selectedCalDate}`;
+                sectionTitle.textContent = `Eventi del ${formatItalianDate(selectedCalDate)}`;
+                clearBtn.style.display = 'inline-block';
             } else {
-                banner.style.display = 'none';
+                sectionTitle.textContent = 'Tutti gli Eventi';
+                clearBtn.style.display = 'none';
             }
         }
 
@@ -712,7 +720,12 @@
         };
 
         // Modale Quick Add
-        window.openQuickAdd = function() { document.getElementById('quickAddModal').style.display = 'flex'; };
+        window.openQuickAdd = function() {
+            if (selectedCalDate) {
+                document.getElementById('quickDate').value = selectedCalDate;
+            }
+            document.getElementById('quickAddModal').style.display = 'flex';
+        };
         window.closeQuickAdd = function() { document.getElementById('quickAddModal').style.display = 'none'; };
         window.toggleQuickFields = function() {
             const type = document.getElementById('quickType').value;
@@ -751,7 +764,7 @@
             await addDoc(collection(db, `rooms/${currentRoomId}/events`), { title, date, category, owner, createdBy: currentUserName });
             await logAction(`ha aggiunto l'evento "${title}"`);
             document.getElementById('evTitle').value = '';
-            document.getElementById('evDate').value = '';
+            if (!selectedCalDate) document.getElementById('evDate').value = '';
         };
         window.deleteEvent = async (id, title) => {
             await deleteDoc(doc(db, `rooms/${currentRoomId}/events`, id));
@@ -870,7 +883,7 @@
                 </div>
             `).join('') : '<div class="card card-sub">Nessuna notifica recente.</div>';
 
-            // Calendar View
+            // Calendar View (subito sotto la griglia!)
             const filterValue = document.getElementById('eventFilter').value;
             let filteredEvents = events.filter(e => {
                 if (selectedCalDate && e.date !== selectedCalDate) return false;
@@ -884,10 +897,10 @@
                     <button class="delete-btn" onclick="deleteEvent('${e.id}', '${e.title}')">Elimina</button>
                     <button class="btn-icon" onclick="sendNudge('${e.title}')" title="Ricorda all'altro" style="float:right; margin-right:10px;">🔔</button>
                     <div class="card-title">${e.category || ''} ${e.title}</div>
-                    <div class="card-sub">Data: ${e.date} • Inserito da: ${e.createdBy}</div>
+                    <div class="card-sub">Data: ${formatItalianDate(e.date)} • Inserito da: ${e.createdBy}</div>
                     <span class="badge badge-${e.owner}">${e.owner}</span>
                 </div>
-            `).join('') : '<div class="card card-sub">Nessun evento trovato per i filtri selezionati.</div>';
+            `).join('') : `<div class="card card-sub">${selectedCalDate ? 'Nessun evento in programma per questo giorno.' : 'Nessun evento trovato.'}</div>`;
 
             // Tasks View
             document.getElementById('tasksContainer').innerHTML = tasks.filter(t => !searchQuery || t.title.toLowerCase().includes(searchQuery)).map(t => `
