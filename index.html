@@ -288,7 +288,7 @@
 
     <!-- SCHERMATA ACCESSO STANZA -->
     <div id="roomScreen">
-        <h1 style="text-align: center; color: var(--primary); margin-bottom: 8px;">❤️ OurSync v3.3</h1>
+        <h1 style="text-align: center; color: var(--primary); margin-bottom: 8px;">❤️ OurSync v3.4</h1>
         <p style="text-align: center; color: var(--gray); font-size: 13px; margin-bottom: 24px;">Inserisci lo stesso ID Stanza su entrambi i telefoni per connettervi</p>
         
         <div class="form-group">
@@ -375,39 +375,7 @@
                         <option value="both">In comune</option>
                     </select>
                 </div>
-                <div id="eventsContainer" style="margin-bottom: 20px;"></div>
-
-                <!-- 3. MODULO AGGIUNTA RAPIDA EVENTO -->
-                <h2>Nuovo Evento</h2>
-                <div class="card">
-                    <div class="form-group">
-                        <label>Titolo Evento</label>
-                        <input type="text" id="evTitle" placeholder="Es. Cena fuori">
-                    </div>
-                    <div class="form-group">
-                        <label>Data</label>
-                        <input type="date" id="evDate">
-                    </div>
-                    <div class="form-group">
-                        <label>Categoria</label>
-                        <select id="evCategory">
-                            <option value="💼 Lavoro">💼 Lavoro</option>
-                            <option value="🏠 Casa">🏠 Casa</option>
-                            <option value="❤️ Coppia">❤️ Coppia</option>
-                            <option value="🍝 Uscite">🍝 Uscite</option>
-                            <option value="✈️ Viaggi">✈️ Viaggi</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Assegnazione</label>
-                        <select id="evOwner">
-                            <option value="mine">Mio</option>
-                            <option value="theirs">Dell'altra persona</option>
-                            <option value="both">Entrambi (In comune)</option>
-                        </select>
-                    </div>
-                    <button class="primary-btn" onclick="addEvent()">Aggiungi Evento</button>
-                </div>
+                <div id="eventsContainer"></div>
             </section>
 
             <!-- SEZIONE ATTIVITÀ -->
@@ -520,8 +488,29 @@
             <div class="form-group">
                 <input type="text" id="quickTitle" placeholder="Titolo...">
             </div>
-            <div class="form-group" id="quickDateGroup">
-                <input type="date" id="quickDate">
+            <div id="quickEventFields">
+                <div class="form-group">
+                    <label>Data</label>
+                    <input type="date" id="quickDate">
+                </div>
+                <div class="form-group">
+                    <label>Categoria</label>
+                    <select id="quickCategory">
+                        <option value="💼 Lavoro">💼 Lavoro</option>
+                        <option value="🏠 Casa">🏠 Casa</option>
+                        <option value="❤️ Coppia">❤️ Coppia</option>
+                        <option value="🍝 Uscite">🍝 Uscite</option>
+                        <option value="✈️ Viaggi">✈️ Viaggi</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Assegnazione</label>
+                    <select id="quickOwner">
+                        <option value="both">Entrambi (In comune)</option>
+                        <option value="mine">Mio</option>
+                        <option value="theirs">Dell'altra persona</option>
+                    </select>
+                </div>
             </div>
             <button class="primary-btn" onclick="saveQuickAdd()">Salva</button>
             <button style="background:none; border:none; color:var(--gray); width:100%; margin-top:8px; cursor:pointer;" onclick="closeQuickAdd()">Annulla</button>
@@ -638,7 +627,6 @@
                 clearDateFilter();
             } else {
                 selectedCalDate = dateStr;
-                document.getElementById('evDate').value = dateStr;
                 renderAll();
             }
         };
@@ -694,7 +682,6 @@
 
             grid.innerHTML = html;
 
-            // Aggiorna l'intestazione della lista eventi subito sotto il calendario
             const sectionTitle = document.getElementById('eventsSectionTitle');
             const clearBtn = document.getElementById('clearDateBtn');
             if (selectedCalDate) {
@@ -721,25 +708,32 @@
 
         // Modale Quick Add
         window.openQuickAdd = function() {
-            if (selectedCalDate) {
-                document.getElementById('quickDate').value = selectedCalDate;
-            }
+            document.getElementById('quickDate').value = selectedCalDate || new Date().toISOString().split('T')[0];
+            toggleQuickFields();
             document.getElementById('quickAddModal').style.display = 'flex';
         };
         window.closeQuickAdd = function() { document.getElementById('quickAddModal').style.display = 'none'; };
         window.toggleQuickFields = function() {
             const type = document.getElementById('quickType').value;
-            document.getElementById('quickDateGroup').style.display = (type === 'event' || type === 'deadline') ? 'block' : 'none';
+            document.getElementById('quickEventFields').style.display = (type === 'event') ? 'block' : 'none';
         };
         window.saveQuickAdd = async function() {
             const type = document.getElementById('quickType').value;
             const title = document.getElementById('quickTitle').value;
             const date = document.getElementById('quickDate').value;
+            const category = document.getElementById('quickCategory').value;
+            const owner = document.getElementById('quickOwner').value;
 
             if(!title) return alert('Inserisci un titolo');
 
             if(type === 'event') {
-                await addDoc(collection(db, `rooms/${currentRoomId}/events`), { title, date: date || new Date().toISOString().split('T')[0], owner: 'both', createdBy: currentUserName });
+                await addDoc(collection(db, `rooms/${currentRoomId}/events`), {
+                    title,
+                    date: date || new Date().toISOString().split('T')[0],
+                    category,
+                    owner,
+                    createdBy: currentUserName
+                });
             } else if(type === 'task') {
                 await addDoc(collection(db, `rooms/${currentRoomId}/tasks`), { title, completed: false, createdBy: currentUserName });
             } else if(type === 'list') {
@@ -754,18 +748,6 @@
         };
 
         // Funzioni CRUD
-        window.addEvent = async function() {
-            const title = document.getElementById('evTitle').value;
-            const date = document.getElementById('evDate').value;
-            const category = document.getElementById('evCategory').value;
-            const owner = document.getElementById('evOwner').value;
-            if(!title || !date) return alert('Compila tutti i campi');
-            
-            await addDoc(collection(db, `rooms/${currentRoomId}/events`), { title, date, category, owner, createdBy: currentUserName });
-            await logAction(`ha aggiunto l'evento "${title}"`);
-            document.getElementById('evTitle').value = '';
-            if (!selectedCalDate) document.getElementById('evDate').value = '';
-        };
         window.deleteEvent = async (id, title) => {
             await deleteDoc(doc(db, `rooms/${currentRoomId}/events`, id));
             await logAction(`ha eliminato l'evento "${title}"`);
@@ -883,7 +865,7 @@
                 </div>
             `).join('') : '<div class="card card-sub">Nessuna notifica recente.</div>';
 
-            // Calendar View (subito sotto la griglia!)
+            // Calendar View
             const filterValue = document.getElementById('eventFilter').value;
             let filteredEvents = events.filter(e => {
                 if (selectedCalDate && e.date !== selectedCalDate) return false;
