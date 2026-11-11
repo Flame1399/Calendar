@@ -119,6 +119,16 @@
             padding: 2px 4px;
         }
 
+        .delete-btn {
+            float: right;
+            background: none;
+            border: none;
+            color: var(--danger);
+            font-size: 12px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
         .fab {
             position: fixed;
             bottom: 75px;
@@ -201,13 +211,84 @@
         label { display: block; font-size: 11px; font-weight: 600; color: var(--gray); margin-bottom: 4px; text-transform: uppercase; }
         input, select, textarea { width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 8px; font-size: 14px; outline: none; background: var(--bg); }
         button.primary-btn { width: 100%; background: var(--primary); color: var(--white); border: none; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer; margin-top: 8px; }
+
+        /* STILI CALENDARIO VISIVO */
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 4px;
+            text-align: center;
+        }
+
+        .cal-day-name {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--gray);
+            padding-bottom: 6px;
+        }
+
+        .cal-cell {
+            aspect-ratio: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border-radius: 10px;
+            font-size: 13px;
+            cursor: pointer;
+            background: var(--bg);
+            border: 1px solid transparent;
+            position: relative;
+        }
+
+        .cal-cell.empty {
+            background: transparent;
+            cursor: default;
+        }
+
+        .cal-cell.today {
+            border-color: var(--primary);
+            font-weight: bold;
+            color: var(--primary);
+        }
+
+        .cal-cell.selected {
+            background: var(--primary);
+            color: var(--white);
+            font-weight: bold;
+        }
+
+        .cal-dots {
+            display: flex;
+            gap: 2px;
+            margin-top: 3px;
+            height: 5px;
+        }
+
+        .dot {
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+        }
+
+        .dot-mine { background-color: #2B6CB0; }
+        .dot-theirs { background-color: #E53E3E; }
+        .dot-both { background-color: #805AD5; }
+        .cal-cell.selected .dot { background-color: #FFFFFF; }
     </style>
 </head>
 <body>
 
     <!-- SCHERMATA ACCESSO STANZA -->
     <div id="roomScreen">
-        <h1 style="text-align: center; color: var(--primary); margin-bottom: 8px;">❤️ OurSync v3.1</h1>
+        <h1 style="text-align: center; color: var(--primary); margin-bottom: 8px;">❤️ OurSync v3.2</h1>
         <p style="text-align: center; color: var(--gray); font-size: 13px; margin-bottom: 24px;">Inserisci lo stesso ID Stanza su entrambi i telefoni per connettervi</p>
         
         <div class="form-group">
@@ -261,6 +342,31 @@
 
             <!-- SEZIONE CALENDARIO -->
             <section id="calendar" class="section">
+                <h2>Calendario Mensile</h2>
+                <div class="card">
+                    <div class="calendar-header">
+                        <button class="btn-icon" onclick="changeMonth(-1)" style="font-size: 18px;">◀</button>
+                        <strong id="calMonthYear" style="font-size: 15px; text-transform: capitalize;"></strong>
+                        <button class="btn-icon" onclick="changeMonth(1)" style="font-size: 18px;">▶</button>
+                    </div>
+                    
+                    <div class="calendar-grid">
+                        <div class="cal-day-name">Lun</div>
+                        <div class="cal-day-name">Mar</div>
+                        <div class="cal-day-name">Mer</div>
+                        <div class="cal-day-name">Gio</div>
+                        <div class="cal-day-name">Ven</div>
+                        <div class="cal-day-name">Sab</div>
+                        <div class="cal-day-name">Dom</div>
+                    </div>
+                    <div id="calendarDaysGrid" class="calendar-grid"></div>
+                    
+                    <div id="selectedDateBanner" style="display: none; margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--border); justify-content: space-between; align-items: center; font-size: 12px;">
+                        <span id="selectedDateLabel"></span>
+                        <button onclick="clearDateFilter()" style="background: none; border: none; color: var(--primary); font-weight: bold; cursor: pointer;">Mostra tutti</button>
+                    </div>
+                </div>
+
                 <h2>Nuovo Evento</h2>
                 <div class="card">
                     <div class="form-group">
@@ -449,6 +555,10 @@
         let notes = [];
         let activityLogs = [];
 
+        // Stato del calendario visivo
+        let currentCalDate = new Date();
+        let selectedCalDate = null;
+
         let unsubEvents, unsubTasks, unsubLists, unsubDeadlines, unsubNotes, unsubLogs;
 
         window.joinRoom = function() {
@@ -480,6 +590,7 @@
                 document.getElementById('mainApp').style.display = 'block';
                 document.getElementById('welcomeTitle').textContent = `Ciao, ${currentUserName} 👋`;
                 document.getElementById('roomSub').textContent = `Stanza: ${currentRoomId}`;
+                renderVisualCalendar();
                 initRealtimeListeners();
             }
         }
@@ -514,6 +625,77 @@
                 activityLogs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                 renderAll();
             });
+        }
+
+        // Funzioni Calendario Visivo
+        window.changeMonth = function(delta) {
+            currentCalDate.setMonth(currentCalDate.getMonth() + delta);
+            renderVisualCalendar();
+        };
+
+        window.selectCalDate = function(dateStr) {
+            if (selectedCalDate === dateStr) {
+                clearDateFilter();
+            } else {
+                selectedCalDate = dateStr;
+                document.getElementById('evDate').value = dateStr;
+                renderAll();
+            }
+        };
+
+        window.clearDateFilter = function() {
+            selectedCalDate = null;
+            renderAll();
+        };
+
+        function renderVisualCalendar() {
+            const grid = document.getElementById('calendarDaysGrid');
+            const monthLabel = document.getElementById('calMonthYear');
+            if (!grid || !monthLabel) return;
+
+            const year = currentCalDate.getFullYear();
+            const month = currentCalDate.getMonth();
+            const todayStr = new Date().toISOString().split('T')[0];
+
+            monthLabel.textContent = new Date(year, month).toLocaleDateString('it-IT', { month: 'long', year: 'numeric' });
+
+            const firstDayIndex = new Date(year, month, 1).getDay();
+            const startOffset = firstDayIndex === 0 ? 6 : firstDayIndex - 1;
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+            let html = '';
+
+            for (let i = 0; i < startOffset; i++) {
+                html += `<div class="cal-cell empty"></div>`;
+            }
+
+            for (let day = 1; day <= daysInMonth; day++) {
+                const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                const dayEvents = events.filter(e => e.date === dateStr);
+
+                let classes = 'cal-cell';
+                if (dateStr === todayStr) classes += ' today';
+                if (dateStr === selectedCalDate) classes += ' selected';
+
+                const dotsHtml = dayEvents.slice(0, 3).map(e => `<span class="dot dot-${e.owner || 'both'}"></span>`).join('');
+
+                html += `
+                    <div class="${classes}" onclick="selectCalDate('${dateStr}')">
+                        <span>${day}</span>
+                        <div class="cal-dots">${dotsHtml}</div>
+                    </div>
+                `;
+            }
+
+            grid.innerHTML = html;
+
+            const banner = document.getElementById('selectedDateBanner');
+            if (selectedCalDate) {
+                banner.style.display = 'flex';
+                document.getElementById('selectedDateLabel').textContent = `Filtro attivo: ${selectedCalDate}`;
+            } else {
+                banner.style.display = 'none';
+            }
         }
 
         async function logAction(actionText) {
@@ -625,12 +807,15 @@
             document.getElementById(tabId).classList.add('active');
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
             btn.classList.add('active');
+            if (tabId === 'calendar') renderVisualCalendar();
         };
 
         function renderAll() {
             const todayStr = new Date().toISOString().split('T')[0];
             const searchQuery = document.getElementById('globalSearch').value.toLowerCase();
             
+            renderVisualCalendar();
+
             const todayEvents = events.filter(e => e.date === todayStr);
             const isFreeTogether = !todayEvents.some(e => e.owner === 'mine' || e.owner === 'theirs');
             document.getElementById('freeTimeSuggestion').textContent = isFreeTogether 
@@ -645,7 +830,7 @@
                         <button class="btn-icon" onclick="sendNudge('${e.title}')" title="Ricorda all'altro">🔔</button>
                     </div>
                     <div class="card-title">${e.category || ''} ${e.title}</div>
-                    <span class="badge ${e.owner === 'both' ? 'badge-both' : 'badge-mine'}">${e.owner}</span>
+                    <span class="badge badge-${e.owner || 'both'}">${e.owner}</span>
                 </div>
             `).join('') : '<div class="card card-sub">Nessun evento per oggi.</div>';
 
@@ -688,12 +873,13 @@
             // Calendar View
             const filterValue = document.getElementById('eventFilter').value;
             let filteredEvents = events.filter(e => {
+                if (selectedCalDate && e.date !== selectedCalDate) return false;
                 if (filterValue !== 'all' && e.owner !== filterValue) return false;
                 if (searchQuery && !e.title.toLowerCase().includes(searchQuery)) return false;
                 return true;
             });
             filteredEvents.sort((a, b) => new Date(a.date) - new Date(b.date));
-            document.getElementById('eventsContainer').innerHTML = filteredEvents.map(e => `
+            document.getElementById('eventsContainer').innerHTML = filteredEvents.length ? filteredEvents.map(e => `
                 <div class="card">
                     <button class="delete-btn" onclick="deleteEvent('${e.id}', '${e.title}')">Elimina</button>
                     <button class="btn-icon" onclick="sendNudge('${e.title}')" title="Ricorda all'altro" style="float:right; margin-right:10px;">🔔</button>
@@ -701,7 +887,7 @@
                     <div class="card-sub">Data: ${e.date} • Inserito da: ${e.createdBy}</div>
                     <span class="badge badge-${e.owner}">${e.owner}</span>
                 </div>
-            `).join('');
+            `).join('') : '<div class="card card-sub">Nessun evento trovato per i filtri selezionati.</div>';
 
             // Tasks View
             document.getElementById('tasksContainer').innerHTML = tasks.filter(t => !searchQuery || t.title.toLowerCase().includes(searchQuery)).map(t => `
