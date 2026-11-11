@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>❤️ OurSync v6.0 - Ultimate Edition</title>
+    <title>❤️ OurSync v6.1 - Ultimate Edition</title>
     
     <meta name="theme-color" content="#FF6B6B">
     <meta name="mobile-web-app-capable" content="yes">
@@ -466,8 +466,8 @@
 
     <!-- SCHERMATA ACCESSO STANZA -->
     <div id="roomScreen">
-        <h1 style="text-align: center; color: var(--primary); margin-bottom: 8px;">❤️ OurSync v6.0</h1>
-        <p style="text-align: center; color: var(--gray); font-size: 13px; margin-bottom: 24px;">Ultimate Edition & Smart Features</p>
+        <h1 style="text-align: center; color: var(--primary); margin-bottom: 8px;">❤️ OurSync v6.1</h1>
+        <p style="text-align: center; color: var(--gray); font-size: 13px; margin-bottom: 24px;">Ultimate Edition & Smart Camera</p>
         
         <div class="form-group">
             <label>ID Stanza Condivisa</label>
@@ -671,6 +671,9 @@
         </nav>
     </div>
 
+    <!-- INPUT FILE NASCOSTO PER FOTOCAMERA CELLULARE -->
+    <input type="file" id="cameraInput" accept="image/*" capture="environment" style="display:none;" onchange="handleCameraPhoto(event)">
+
     <!-- MODAL QUICK ADD -->
     <div id="quickAddModal" class="modal">
         <div class="modal-content">
@@ -807,7 +810,7 @@
         </div>
     </div>
 
-    <!-- LOGICA FIREBASE E ULTIMATE FEATURES -->
+    <!-- LOGICA FIREBASE E FOTOCAMERA NATIVA -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js";
         import { getFirestore, collection, addDoc, updateDoc, deleteDoc, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js";
@@ -858,7 +861,6 @@
         let currentThemeIndex = parseInt(localStorage.getItem('oursync_theme_idx') || '0');
         let isDarkMode = localStorage.getItem('oursync_dark') === 'true';
 
-        // PIN Security Check
         function checkPinLock(roomId) {
             const savedPin = localStorage.getItem(`oursync_pin_${roomId}`);
             if (savedPin) {
@@ -914,6 +916,36 @@
                 new Notification(title, { body, icon: "❤️" });
             }
         }
+
+        // Funzione per aprire la fotocamera nativa del cellulare
+        window.openCamera = function() {
+            document.getElementById('cameraInput').click();
+        };
+
+        window.handleCameraPhoto = function(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const base64Image = e.target.result;
+                const memoryKey = `oursync_memory_${currentRoomId}`;
+                localStorage.setItem(memoryKey, base64Image);
+                renderAll();
+                logAction("📸 ha aggiornato la foto ricordo della settimana!");
+            };
+            reader.readAsDataURL(file);
+        };
+
+        window.updateMemoryPhotoUrl = function() {
+            const url = prompt("Incolla l'URL dell'immagine ricordo:");
+            if (url) {
+                const memoryKey = `oursync_memory_${currentRoomId}`;
+                localStorage.setItem(memoryKey, url);
+                renderAll();
+                logAction("📸 ha aggiornato la foto ricordo della settimana!");
+            }
+        };
 
         window.startVoiceRecognition = function() {
             const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -1362,25 +1394,20 @@
                 </div>
             `;
 
-            // Memory Lane (Foto Ricordo)
+            // Memory Lane (Foto Ricordo con Scatto Diretto)
             const memoryKey = `oursync_memory_${currentRoomId}`;
-            let memoryUrl = localStorage.getItem(memoryKey) || '';
+            let memoryData = localStorage.getItem(memoryKey) || '';
             const memoryEl = document.getElementById('memoryLaneContainer');
             memoryEl.innerHTML = `
                 <div class="memory-card">
                     <div style="font-size:12px; font-weight:bold; color:var(--primary); margin-bottom:6px;">📸 Memory Lane (Ricordo della Settimana)</div>
-                    ${memoryUrl ? `<img src="${memoryUrl}" style="max-height:120px; border-radius:8px; margin-bottom:6px; display:block; margin-left:auto; margin-right:auto;">` : '<div style="font-size:12px; color:var(--gray); margin-bottom:6px;">Nessuna foto caricata questa settimana.</div>'}
-                    <button class="btn-small" onclick="updateMemoryPhoto()">Cambia Foto (URL)</button>
+                    ${memoryData ? `<img src="${memoryData}" style="max-height:140px; max-width:100%; border-radius:8px; margin-bottom:8px; display:block; margin-left:auto; margin-right:auto; object-fit: cover;">` : '<div style="font-size:12px; color:var(--gray); margin-bottom:8px;">Nessuna foto scattata questa settimana.</div>'}
+                    <div style="display:flex; gap:6px; justify-content:center; flex-wrap:wrap;">
+                        <button class="btn-small" onclick="openCamera()">📸 Scatta Foto</button>
+                        <button class="btn-small" style="background:var(--border); color:var(--text);" onclick="updateMemoryPhotoUrl()">🔗 Incolla URL</button>
+                    </div>
                 </div>
             `;
-
-            window.updateMemoryPhoto = function() {
-                const url = prompt("Incolla l'URL dell'immagine ricordo:");
-                if (url) {
-                    localStorage.setItem(memoryKey, url);
-                    renderAll();
-                }
-            };
 
             // Contatore Giorni Insieme
             const coupleStartDateKey = `oursync_start_${currentRoomId}`;
