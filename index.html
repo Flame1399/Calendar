@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>❤️ OurSync v5.0 - Ultimate Smart Planner</title>
+    <title>❤️ OurSync v5.5 - Love & Fun Edition</title>
     
     <meta name="theme-color" content="#FF6B6B">
     <meta name="mobile-web-app-capable" content="yes">
@@ -372,6 +372,15 @@
             align-items: center;
         }
 
+        .love-card {
+            background: linear-gradient(135deg, #9B51E0, #FF6B6B);
+            color: white;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 12px;
+            text-align: center;
+        }
+
         .quick-suggestions {
             display: flex;
             flex-wrap: wrap;
@@ -410,8 +419,8 @@
 
     <!-- SCHERMATA ACCESSO STANZA -->
     <div id="roomScreen">
-        <h1 style="text-align: center; color: var(--primary); margin-bottom: 8px;">❤️ OurSync v5.0</h1>
-        <p style="text-align: center; color: var(--gray); font-size: 13px; margin-bottom: 24px;">Smart Planner & UI Personalizzabile</p>
+        <h1 style="text-align: center; color: var(--primary); margin-bottom: 8px;">❤️ OurSync v5.5</h1>
+        <p style="text-align: center; color: var(--gray); font-size: 13px; margin-bottom: 24px;">Smart Planner & Love Edition</p>
         
         <div class="form-group">
             <label>ID Stanza Condivisa</label>
@@ -462,6 +471,7 @@
 
             <!-- SEZIONE HOME -->
             <section id="home" class="section active">
+                <div id="togetherCounterContainer"></div>
                 <div id="countdownContainer"></div>
 
                 <div class="card" style="background: var(--primary-light); border-color: var(--primary);">
@@ -558,14 +568,14 @@
                 <div id="expensesContainer"></div>
             </section>
 
-            <!-- SEZIONE WISHLIST & IDEE DI COPPIA -->
+            <!-- SEZIONE LOVE & FUN (IDEE & DESIDERI) -->
             <section id="ideas" class="section">
-                <div class="card" style="background: #FAF5FF; border-color: var(--purple); text-align: center;">
-                    <div class="card-title" style="color: var(--purple);">🎲 Indecisi su cosa fare?</div>
-                    <p id="randomIdeaResult" style="font-size: 13px; margin: 6px 0;">Estrai un'idea a sorte dalla vostra lista!</p>
-                    <button class="primary-btn" style="background: var(--purple);" onclick="pickRandomIdea()">Estrai un'Idea a Sorte</button>
+                <div class="love-card">
+                    <div style="font-size: 13px; font-weight: 600; opacity: 0.9;">🏺 Barattolo dei Desideri & Date Night</div>
+                    <p id="randomIdeaResult" style="font-size: 14px; margin: 8px 0;">Estrai a sorte la prossima attività da fare insieme!</p>
+                    <button class="primary-btn" style="background: white; color: var(--purple);" onclick="pickRandomIdea()">✨ Estrai un'Idea a Sorte</button>
                 </div>
-                <h2>Le Vostre Idee</h2>
+                <h2>Le Vostre Idee Romantiche</h2>
                 <div id="ideasContainer"></div>
             </section>
 
@@ -605,7 +615,7 @@
         </nav>
     </div>
 
-    <!-- MODAL QUICK ADD CONTESTUALE + VOCALE + SUGGERIMENTI -->
+    <!-- MODAL QUICK ADD -->
     <div id="quickAddModal" class="modal">
         <div class="modal-content">
             <h3 style="margin-bottom: 12px;">Aggiunta Rapida</h3>
@@ -616,7 +626,7 @@
                     <option value="task">✅ Nuova Task</option>
                     <option value="list">🛒 Elemento Spesa</option>
                     <option value="expense">💶 Spesa Condivisa (€)</option>
-                    <option value="idea">💡 Idea / Wishlist</option>
+                    <option value="idea">💡 Idea Date Night</option>
                     <option value="note">📝 Nuova Nota</option>
                 </select>
             </div>
@@ -625,7 +635,6 @@
                     <input type="text" id="quickTitle" placeholder="Titolo / Nome..." style="flex:1;">
                     <button type="button" onclick="startVoiceRecognition()" style="background: var(--border); border: none; border-radius: 8px; padding: 0 10px; cursor: pointer;" title="Detta a voce">🎙️</button>
                 </div>
-                <!-- Suggerimenti rapidi spesa -->
                 <div id="grocerySuggestionsContainer" style="display: none;">
                     <div style="font-size: 10px; color: var(--gray); margin-top: 4px;">Frequenti:</div>
                     <div class="quick-suggestions">
@@ -638,7 +647,6 @@
                 </div>
             </div>
             
-            <!-- CAMPI PER EVENTO -->
             <div id="quickEventFields" class="type-fields">
                 <div class="form-group">
                     <label>Data</label>
@@ -664,7 +672,6 @@
                 </div>
             </div>
 
-            <!-- CAMPI PER SCADENZA -->
             <div id="quickDeadlineFields" class="type-fields" style="display: none;">
                 <div class="form-group">
                     <label>Data di Scadenza</label>
@@ -694,7 +701,6 @@
                 </div>
             </div>
 
-            <!-- CAMPI PER TASK -->
             <div id="quickTaskFields" class="type-fields" style="display: none;">
                 <div class="form-group">
                     <label>Ricorrenza</label>
@@ -706,7 +712,6 @@
                 </div>
             </div>
 
-            <!-- CAMPI PER SPESA CONDIVISA (€) -->
             <div id="quickExpenseFields" class="type-fields" style="display: none;">
                 <div class="form-group">
                     <label>Importo (€)</label>
@@ -721,15 +726,14 @@
                 </div>
             </div>
 
-            <!-- CAMPI PER IDEA -->
             <div id="quickIdeaFields" class="type-fields" style="display: none;">
                 <div class="form-group">
                     <label>Categoria</label>
                     <select id="quickIdeaTag">
-                        <option value="🍝 Ristoranti">🍝 Ristoranti</option>
-                        <option value="🎬 Film & Serie">🎬 Film & Serie</option>
+                        <option value="🍝 Ristoranti & Cene">🍝 Ristoranti & Cene</option>
+                        <option value="🎬 Film & Serie TV">🎬 Film & Serie TV</option>
                         <option value="✈️ Viaggi & Gite">✈️ Viaggi & Gite</option>
-                        <option value="🎁 Regali & Casa">🎁 Regali & Casa</option>
+                        <option value="🕯️ Date Night Romantico">🕯️ Date Night Romantico</option>
                     </select>
                 </div>
             </div>
@@ -739,7 +743,7 @@
         </div>
     </div>
 
-    <!-- LOGICA FIREBASE E UI SMART -->
+    <!-- LOGICA FIREBASE E LOVE FEATURES -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js";
         import { getFirestore, collection, addDoc, updateDoc, deleteDoc, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js";
@@ -775,10 +779,16 @@
         let isSavingQuick = false;
         let logsCollapsed = false;
 
-        const STATUS_LIST = ["🟢 Libero", "💼 Impegnato", "🚗 Sto tornando", "🛒 A fare la spesa", "😴 Riposo"];
+        const STATUS_LIST = [
+            "🟢 Libero",
+            "🔋 100% Carico",
+            "☕ Bisogno di Coccole",
+            "🌙 Romantic Mood",
+            "🚗 Sto tornando",
+            "😴 Stanco/a"
+        ];
         let myStatusIndex = 0;
 
-        // Gestione Temi UI
         const THEMES = ['', 'theme-lavender', 'theme-sage', 'theme-midnight'];
         let currentThemeIndex = parseInt(localStorage.getItem('oursync_theme_idx') || '0');
         let isDarkMode = localStorage.getItem('oursync_dark') === 'true';
@@ -802,7 +812,6 @@
             applyThemeSettings();
         };
 
-        // Riconoscimento Vocale Smart
         window.startVoiceRecognition = function() {
             const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
             if (!SpeechRecognition) {
@@ -812,8 +821,7 @@
             const recognition = new SpeechRecognition();
             recognition.lang = 'it-IT';
             recognition.onresult = (event) => {
-                const speechText = event.results[0][0].transcript;
-                document.getElementById('quickTitle').value = speechText;
+                document.getElementById('quickTitle').value = event.results[0][0].transcript;
             };
             recognition.start();
         };
@@ -1081,56 +1089,35 @@
             try {
                 if (type === 'event') {
                     await addDoc(collection(db, `rooms/${currentRoomId}/events`), {
-                        title,
-                        date: document.getElementById('quickDate').value || new Date().toISOString().split('T')[0],
-                        category: document.getElementById('quickCategory').value,
-                        owner: document.getElementById('quickOwner').value,
-                        createdBy: currentUserName
+                        title, date: document.getElementById('quickDate').value || new Date().toISOString().split('T')[0],
+                        category: document.getElementById('quickCategory').value, owner: document.getElementById('quickOwner').value, createdBy: currentUserName
                     });
                 } else if (type === 'deadline') {
                     await addDoc(collection(db, `rooms/${currentRoomId}/deadlines`), {
-                        title,
-                        date: document.getElementById('quickDlDate').value || new Date().toISOString().split('T')[0],
-                        owner: document.getElementById('quickDlOwner').value,
-                        recurrence: document.getElementById('quickDlRecurrence').value,
-                        showInCal: document.getElementById('quickDlShowInCal').checked,
-                        createdBy: currentUserName
+                        title, date: document.getElementById('quickDlDate').value || new Date().toISOString().split('T')[0],
+                        owner: document.getElementById('quickDlOwner').value, recurrence: document.getElementById('quickDlRecurrence').value,
+                        showInCal: document.getElementById('quickDlShowInCal').checked, createdBy: currentUserName
                     });
                 } else if (type === 'task') {
                     await addDoc(collection(db, `rooms/${currentRoomId}/tasks`), {
-                        title,
-                        completed: false,
-                        recurrence: document.getElementById('quickTaskRecurrence').value,
-                        createdBy: currentUserName
+                        title, completed: false, recurrence: document.getElementById('quickTaskRecurrence').value, createdBy: currentUserName
                     });
                 } else if (type === 'list') {
                     await addDoc(collection(db, `rooms/${currentRoomId}/lists`), {
-                        title,
-                        aisle: detectGroceryAisle(title),
-                        completed: false,
-                        createdBy: currentUserName
+                        title, aisle: detectGroceryAisle(title), completed: false, createdBy: currentUserName
                     });
                 } else if (type === 'expense') {
                     const amount = parseFloat(document.getElementById('quickExpAmount').value) || 0;
                     await addDoc(collection(db, `rooms/${currentRoomId}/expenses`), {
-                        title,
-                        amount,
-                        paidBy: document.getElementById('quickExpPaidBy').value,
-                        paidByName: currentUserName,
-                        date: new Date().toISOString().split('T')[0]
+                        title, amount, paidBy: document.getElementById('quickExpPaidBy').value, paidByName: currentUserName, date: new Date().toISOString().split('T')[0]
                     });
                 } else if (type === 'idea') {
                     await addDoc(collection(db, `rooms/${currentRoomId}/ideas`), {
-                        title,
-                        tag: document.getElementById('quickIdeaTag').value,
-                        createdBy: currentUserName
+                        title, tag: document.getElementById('quickIdeaTag').value, createdBy: currentUserName
                     });
                 } else if (type === 'note') {
                     await addDoc(collection(db, `rooms/${currentRoomId}/notes`), {
-                        title,
-                        content: '',
-                        isPrivate: false,
-                        author: currentUserName
+                        title, content: '', isPrivate: false, author: currentUserName
                     });
                 }
 
@@ -1236,7 +1223,40 @@
             
             renderVisualCalendar();
 
-            // Calcolo Countdown per il prossimo evento o viaggio
+            // Contatore Giorni Insieme (Modificabile salvando la data nel localStorage della stanza)
+            const coupleStartDateKey = `oursync_start_${currentRoomId}`;
+            let coupleDate = localStorage.getItem(coupleStartDateKey);
+            const counterContainer = document.getElementById('togetherCounterContainer');
+            
+            if (!coupleDate) {
+                counterContainer.innerHTML = `
+                    <div class="card" style="text-align:center; padding:10px;">
+                        <span style="font-size:12px; color:var(--gray);">Da quanto tempo state insieme?</span>
+                        <div style="display:flex; gap:6px; margin-top:6px; justify-content:center;">
+                            <input type="date" id="coupleDateInput" style="width:auto; padding:4px 8px; font-size:12px;">
+                            <button class="btn-small" onclick="saveCoupleDate()">Salva Data</button>
+                        </div>
+                    </div>
+                `;
+            } else {
+                const diffTime = Math.abs(new Date(todayStr) - new Date(coupleDate));
+                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                counterContainer.innerHTML = `
+                    <div class="card" style="background:var(--primary-light); border-color:var(--primary); text-align:center; padding:10px;">
+                        <span style="font-size:12px; color:var(--primary); font-weight:700;">❤️ Insieme da ${diffDays} giorni indimenticabili</span>
+                    </div>
+                `;
+            }
+
+            window.saveCoupleDate = function() {
+                const val = document.getElementById('coupleDateInput').value;
+                if (val) {
+                    localStorage.setItem(coupleStartDateKey, val);
+                    renderAll();
+                }
+            };
+
+            // Countdown Prossimo Appuntamento
             const futureEvents = [...events, ...deadlines].filter(item => item.date >= todayStr).sort((a,b) => new Date(a.date) - new Date(b.date));
             const countdownEl = document.getElementById('countdownContainer');
             if (futureEvents.length > 0) {
@@ -1264,13 +1284,11 @@
                 ? `Nessun impegno individuale oggi${todayDeadlines.length ? `, ma hai ${todayDeadlines.length} scadenza/e oggi` : ': siete entrambi liberi!'}` 
                 : `Ci sono ${todayEvents.length} eventi programmati per oggi.`;
 
-            // Filtraggio globale per assegnazione
             const filterByOwner = (item) => {
                 if (globalOwnerFilter === 'all') return true;
                 return (item.owner || 'both') === globalOwnerFilter;
             };
 
-            // Home Today
             document.getElementById('todayList').innerHTML = todayEvents.filter(filterByOwner).length ? todayEvents.filter(filterByOwner).map(e => `
                 <div class="card">
                     <div class="action-btns"><button class="btn-icon" onclick="sendNudge('${e.title}')">🔔</button></div>
@@ -1279,7 +1297,6 @@
                 </div>
             `).join('') : '<div class="card card-sub">Nessun evento per oggi con questo filtro.</div>';
 
-            // Home Tasks
             const openTasks = tasks.filter(t => !t.completed);
             document.getElementById('todoListHome').innerHTML = openTasks.length ? openTasks.map(t => `
                 <div class="card" style="display:flex; justify-content:space-between; align-items:center;">
@@ -1291,7 +1308,6 @@
                 </div>
             `).join('') : '<div class="card card-sub">Tutte le attività completate! 🎉</div>';
 
-            // Home Deadlines
             document.getElementById('deadlinesHome').innerHTML = deadlines.filter(filterByOwner).length ? deadlines.filter(filterByOwner).slice(0, 3).map(d => {
                 const diffDays = Math.ceil((new Date(d.date) - new Date(todayStr)) / (1000 * 60 * 60 * 24));
                 return `
@@ -1304,14 +1320,12 @@
                 `;
             }).join('') : '<div class="card card-sub">Nessuna scadenza imminente.</div>';
 
-            // Activity Log
             document.getElementById('activityLogContainer').innerHTML = activityLogs.length ? activityLogs.slice(-4).reverse().map(l => `
                 <div class="card" style="padding: 10px; font-size: 12px;">
                     <span>${l.text} <span style="color:var(--gray); float:right;">${l.time}</span></span>
                 </div>
             `).join('') : '<div class="card card-sub">Nessuna notifica recente.</div>';
 
-            // Calendar View
             const filterValue = document.getElementById('eventFilter').value;
             let filteredEvents = events.filter(e => {
                 if (selectedCalDate && e.date !== selectedCalDate) return false;
@@ -1349,7 +1363,6 @@
 
             document.getElementById('eventsContainer').innerHTML = (calDeadlinesHtml + eventsHtml) || `<div class="card card-sub">Nessun impegno trovato.</div>`;
 
-            // Tasks View
             document.getElementById('tasksContainer').innerHTML = tasks.filter(t => !searchQuery || t.title.toLowerCase().includes(searchQuery)).map(t => `
                 <div class="card" style="display:flex; justify-content:space-between; align-items:center;">
                     <div>
@@ -1364,7 +1377,6 @@
                 </div>
             `).join('') || '<div class="card card-sub">Nessuna attività inserita.</div>';
 
-            // Spesa Raggruppata
             const filteredLists = lists.filter(l => !searchQuery || l.title.toLowerCase().includes(searchQuery));
             if (filteredLists.length) {
                 const grouped = {};
@@ -1389,7 +1401,6 @@
                 document.getElementById('listsContainer').innerHTML = '<div class="card card-sub">Lista della spesa vuota.</div>';
             }
 
-            // Deadlines View
             const sortedDeadlines = [...deadlines].filter(d => (!searchQuery || d.title.toLowerCase().includes(searchQuery)) && filterByOwner(d)).sort((a,b) => new Date(a.date) - new Date(b.date));
             document.getElementById('deadlinesContainer').innerHTML = sortedDeadlines.map(d => `
                 <div class="card">
@@ -1404,7 +1415,6 @@
                 </div>
             `).join('') || '<div class="card card-sub">Nessuna scadenza inserita.</div>';
 
-            // Expenses View (Split Tracker)
             let myPaid = 0;
             let theirPaid = 0;
             expenses.forEach(ex => {
@@ -1438,7 +1448,6 @@
                 `;
             }).join('') || '<div class="card card-sub">Nessuna spesa registrata.</div>';
 
-            // Ideas View
             document.getElementById('ideasContainer').innerHTML = ideas.filter(i => !searchQuery || i.title.toLowerCase().includes(searchQuery)).map(i => `
                 <div class="card" style="display:flex; justify-content:space-between; align-items:center;">
                     <div>
@@ -1452,7 +1461,6 @@
                 </div>
             `).join('') || '<div class="card card-sub">Nessuna idea salvata.</div>';
 
-            // Notes View
             document.getElementById('notesContainer').innerHTML = notes
                 .filter(n => (!n.isPrivate || n.author === currentUserName) && (!searchQuery || n.title.toLowerCase().includes(searchQuery) || n.content.toLowerCase().includes(searchQuery)))
                 .map(n => `
