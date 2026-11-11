@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>❤️ OurSync v4.0 - Smart Planner di Coppia</title>
+    <title>❤️ OurSync v4.1 - Smart Planner di Coppia</title>
     
     <meta name="theme-color" content="#FF6B6B">
     <meta name="mobile-web-app-capable" content="yes">
@@ -36,7 +36,7 @@
         body {
             background-color: var(--bg);
             color: var(--text);
-            padding-bottom: 85px;
+            padding-bottom: 90px;
             max-width: 600px;
             margin: 0 auto;
         }
@@ -165,7 +165,7 @@
 
         .fab {
             position: fixed;
-            bottom: 75px;
+            bottom: 80px;
             right: 20px;
             width: 52px;
             height: 52px;
@@ -231,7 +231,6 @@
             max-width: 600px;
             margin: 0 auto;
             z-index: 100;
-            overflow-x: auto;
         }
 
         .nav-item {
@@ -239,7 +238,7 @@
             font-size: 9px; color: var(--gray);
             display: flex; flex-direction: column; align-items: center; gap: 2px;
             cursor: pointer;
-            min-width: 48px;
+            min-width: 44px;
         }
 
         .nav-item.active { color: var(--primary); font-weight: 700; }
@@ -329,7 +328,6 @@
         .dot-both { background-color: #805AD5; }
         .cal-cell.selected .dot, .cal-cell.selected .dot-dl { background-color: #FFFFFF; }
 
-        /* CATEGORIE SPESA */
         .aisle-header {
             font-size: 12px;
             font-weight: 700;
@@ -339,7 +337,6 @@
             letter-spacing: 0.5px;
         }
 
-        /* BALANCE CARD */
         .balance-box {
             background: linear-gradient(135deg, #2B6CB0, #4A90E2);
             color: white;
@@ -361,7 +358,7 @@
 
     <!-- SCHERMATA ACCESSO STANZA -->
     <div id="roomScreen">
-        <h1 style="text-align: center; color: var(--primary); margin-bottom: 8px;">❤️ OurSync v4.0</h1>
+        <h1 style="text-align: center; color: var(--primary); margin-bottom: 8px;">❤️ OurSync v4.1</h1>
         <p style="text-align: center; color: var(--gray); font-size: 13px; margin-bottom: 24px;">Smart Planner & Automazioni di Coppia</p>
         
         <div class="form-group">
@@ -393,7 +390,7 @@
 
         <div class="container">
             <div style="margin-bottom: 16px;">
-                <input type="text" id="globalSearch" placeholder="🔍 Cerca eventi, spese, scadenze, idee..." oninput="renderAll()">
+                <input type="text" id="globalSearch" placeholder="🔍 Cerca ovunque..." oninput="renderAll()">
             </div>
 
             <!-- SEZIONE HOME -->
@@ -489,7 +486,7 @@
                 <div class="card">
                     <div class="form-group">
                         <label>Articolo (Riconoscimento reparto automatico)</label>
-                        <input type="text" id="listItemTitle" placeholder="Es. Latte, Mele, Pasta, Detersivo...">
+                        <input type="text" id="listItemTitle" placeholder="Es. Latte, Mele, Pasta...">
                     </div>
                     <button class="primary-btn" onclick="addListItem()">Aggiungi Articolo</button>
                 </div>
@@ -551,7 +548,7 @@
                 <div class="card">
                     <div class="form-group">
                         <label>Descrizione</label>
-                        <input type="text" id="expTitle" placeholder="Es. Spesa Esselunga / Cena pizzeria">
+                        <input type="text" id="expTitle" placeholder="Es. Cena pizzeria">
                     </div>
                     <div class="form-group">
                         <label>Importo (€)</label>
@@ -582,7 +579,7 @@
                 <div class="card">
                     <div class="form-group">
                         <label>Cosa vorreste fare / vedere / provare?</label>
-                        <input type="text" id="ideaTitle" placeholder="Es. Ristorante giapponese in centro">
+                        <input type="text" id="ideaTitle" placeholder="Es. Ristorante giapponese">
                     </div>
                     <div class="form-group">
                         <label>Categoria</label>
@@ -819,7 +816,6 @@
         ];
         let myStatusIndex = 0;
 
-        // Dizionario automatico reparti spesa
         function detectGroceryAisle(itemName) {
             const name = itemName.toLowerCase();
             if (/latte|yogurt|formaggio|mozzarella|burro|panna|uova|parmigiano|ricotta/.test(name)) return "🥛 Latticini & Uova";
@@ -831,7 +827,6 @@
             return "🛒 Varie";
         }
 
-        // Calcolo data successiva per ricorrenze
         function getNextDate(dateStr, recurrence) {
             const d = new Date(dateStr || new Date().toISOString().split('T')[0]);
             if (recurrence === 'weekly') d.setDate(d.getDate() + 7);
@@ -909,7 +904,6 @@
             });
         }
 
-        // Gestione Stati Rapidi Header
         window.cycleMyStatus = async function() {
             myStatusIndex = (myStatusIndex + 1) % STATUS_LIST.length;
             const newStatus = STATUS_LIST[myStatusIndex];
@@ -939,7 +933,6 @@
             }
         }
 
-        // Calendario Visivo (Include eventi + scadenze con showInCal)
         window.changeMonth = function(delta) {
             currentCalDate.setMonth(currentCalDate.getMonth() + delta);
             renderVisualCalendar();
@@ -1014,7 +1007,6 @@
             }
         }
 
-        // Esportazione .ics per calendario nativo smartphone
         window.downloadICS = function(title, dateStr) {
             const cleanDate = dateStr.replace(/-/g, '');
             const icsContent = [
@@ -1054,14 +1046,12 @@
             document.getElementById('activityLogContainer').style.display = logsCollapsed ? 'none' : 'block';
         };
 
-        // Quick Add Contestuale
         window.openQuickAdd = function() {
             const saveBtn = document.getElementById('quickSaveBtn');
             saveBtn.disabled = false;
             isSavingQuick = false;
             document.getElementById('quickTitle').value = '';
 
-            // Imposta tipo in base alla scheda attiva
             const tabToType = {
                 home: 'event',
                 calendar: 'event',
@@ -1171,7 +1161,7 @@
             }
         };
 
-        // CRUD & Automazioni
+        // Funzioni form dedicati per Sezioni
         window.addTask = async function() {
             const title = document.getElementById('taskTitle').value.trim();
             const recurrence = document.getElementById('taskRecurrence').value;
@@ -1184,7 +1174,6 @@
         window.toggleTask = async (id, status, title, recurrence) => {
             const nextStatus = !status;
             await updateDoc(doc(db, `rooms/${currentRoomId}/tasks`, id), { completed: nextStatus });
-            // Automazione: se completata e ricorrente, crea la prossima
             if (nextStatus && recurrence && recurrence !== 'none') {
                 await addDoc(collection(db, `rooms/${currentRoomId}/tasks`), {
                     title,
@@ -1199,7 +1188,6 @@
         };
         window.deleteTask = async (id) => await deleteDoc(doc(db, `rooms/${currentRoomId}/tasks`, id));
 
-        // Spesa Intelligente
         window.addListItem = async function() {
             const title = document.getElementById('listItemTitle').value.trim();
             if (!title) return;
@@ -1220,7 +1208,6 @@
             }
         };
 
-        // Scadenze + Auto-Rinnovo
         window.addDeadline = async function() {
             const title = document.getElementById('dlTitle').value.trim();
             const date = document.getElementById('dlDate').value;
@@ -1256,7 +1243,6 @@
             await logAction(`ha eliminato la scadenza "${title}"`);
         };
 
-        // Spese Condivise (Split)
         window.addExpense = async function() {
             const title = document.getElementById('expTitle').value.trim();
             const amount = parseFloat(document.getElementById('expAmount').value);
@@ -1282,7 +1268,6 @@
             await logAction(`🤝 ha azzerato i conti (Siete in pari!)`);
         };
 
-        // Wishlist & Idee
         window.addIdea = async function() {
             const title = document.getElementById('ideaTitle').value.trim();
             const tag = document.getElementById('ideaTag').value;
@@ -1314,7 +1299,6 @@
             alert(`"${title}" aggiunto al Calendario di oggi!`);
         };
 
-        // Note & Eventi Delete
         window.addNote = async function() {
             const title = document.getElementById('noteTitle').value.trim();
             const content = document.getElementById('noteContent').value;
@@ -1349,7 +1333,6 @@
             
             renderVisualCalendar();
 
-            // Stato giornata Home
             const todayEvents = events.filter(e => e.date === todayStr);
             const todayDeadlines = deadlines.filter(d => d.date === todayStr);
             const isFreeTogether = !todayEvents.some(e => e.owner === 'mine' || e.owner === 'theirs');
@@ -1402,7 +1385,7 @@
                 </div>
             `).join('') : '<div class="card card-sub">Nessuna notifica recente.</div>';
 
-            // Calendar View (Eventi + eventuali Scadenze del giorno)
+            // Calendar View
             const filterValue = document.getElementById('eventFilter').value;
             let filteredEvents = events.filter(e => {
                 if (selectedCalDate && e.date !== selectedCalDate) return false;
@@ -1454,7 +1437,7 @@
                 </div>
             `).join('') || '<div class="card card-sub">Nessuna attività inserita.</div>';
 
-            // Spesa Raggruppata per Reparto
+            // Spesa Raggruppata
             const filteredLists = lists.filter(l => !searchQuery || l.title.toLowerCase().includes(searchQuery));
             if (filteredLists.length) {
                 const grouped = {};
@@ -1498,7 +1481,6 @@
             let myPaid = 0;
             let theirPaid = 0;
             expenses.forEach(ex => {
-                // Considera "mine" se pagato dall'utente corrente, altrimenti "theirs"
                 const isMine = (ex.paidByName === currentUserName && ex.paidBy === 'mine') || (ex.paidByName !== currentUserName && ex.paidBy === 'theirs');
                 if (isMine) myPaid += Number(ex.amount || 0);
                 else theirPaid += Number(ex.amount || 0);
