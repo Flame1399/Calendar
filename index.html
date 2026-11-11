@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>❤️ OurSync v4.2 - Smart Planner di Coppia</title>
+    <title>❤️ OurSync v5.0 - Ultimate Smart Planner</title>
     
     <meta name="theme-color" content="#FF6B6B">
     <meta name="mobile-web-app-capable" content="yes">
@@ -26,11 +26,27 @@
             --warning: #D69E2E;
         }
 
+        /* Temi cromatici */
+        body.theme-lavender { --primary: #9B51E0; --primary-light: #F3E8FF; }
+        body.theme-sage { --primary: #38A169; --primary-light: #E6FFFA; }
+        body.theme-midnight { --primary: #4A90E2; --primary-light: #EBF8FF; }
+
+        /* Dark Mode */
+        body.dark-mode {
+            --bg: #1A202C;
+            --text: #F7FAFC;
+            --gray: #A0AEC0;
+            --border: #4A5568;
+            --white: #2D3748;
+            --primary-light: #4A5568;
+        }
+
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            transition: background 0.2s, color 0.2s;
         }
 
         body {
@@ -71,7 +87,7 @@
         .partner-status {
             font-size: 11px;
             color: var(--gray);
-            background: #EDF2F7;
+            background: var(--border);
             padding: 3px 8px;
             border-radius: 12px;
             display: inline-block;
@@ -97,7 +113,7 @@
             padding: 14px;
             margin-bottom: 10px;
             border: 1px solid var(--border);
-            box-shadow: 0 2px 4px rgba(0,0,0,0.01);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
             position: relative;
         }
 
@@ -176,7 +192,7 @@
             justify-content: center;
             align-items: center;
             font-size: 26px;
-            box-shadow: 0 4px 12px rgba(255, 107, 107, 0.45);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
             border: none;
             cursor: pointer;
             z-index: 99;
@@ -186,7 +202,7 @@
             display: none;
             position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0,0,0,0.45);
+            background: rgba(0,0,0,0.5);
             z-index: 1000;
             justify-content: center;
             align-items: flex-end;
@@ -311,7 +327,7 @@
 
         .cal-cell.empty { background: transparent; cursor: default; }
         .cal-cell.today { border-color: var(--primary); font-weight: bold; color: var(--primary); }
-        .cal-cell.selected { background: var(--primary); color: var(--white); font-weight: bold; }
+        .cal-cell.selected { background: var(--primary); color: #FFFFFF; font-weight: bold; }
 
         .cal-dots {
             display: flex;
@@ -345,6 +361,34 @@
             margin-bottom: 14px;
         }
 
+        .countdown-card {
+            background: linear-gradient(135deg, var(--primary), #FF8E53);
+            color: white;
+            border-radius: 12px;
+            padding: 14px;
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .quick-suggestions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 6px;
+        }
+
+        .suggestion-chip {
+            background: var(--border);
+            border: none;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            cursor: pointer;
+            color: var(--text);
+        }
+
         .checkbox-row {
             display: flex;
             align-items: center;
@@ -352,14 +396,22 @@
             font-size: 13px;
             cursor: pointer;
         }
+
+        .settings-bar {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 12px;
+            align-items: center;
+            justify-content: flex-end;
+        }
     </style>
 </head>
-<body>
+<body id="appBody">
 
     <!-- SCHERMATA ACCESSO STANZA -->
     <div id="roomScreen">
-        <h1 style="text-align: center; color: var(--primary); margin-bottom: 8px;">❤️ OurSync v4.2</h1>
-        <p style="text-align: center; color: var(--gray); font-size: 13px; margin-bottom: 24px;">Smart Planner & Automazioni di Coppia</p>
+        <h1 style="text-align: center; color: var(--primary); margin-bottom: 8px;">❤️ OurSync v5.0</h1>
+        <p style="text-align: center; color: var(--gray); font-size: 13px; margin-bottom: 24px;">Smart Planner & UI Personalizzabile</p>
         
         <div class="form-group">
             <label>ID Stanza Condivisa</label>
@@ -376,25 +428,42 @@
     <div id="mainApp" style="display: none;">
         <header>
             <div>
-                <h1 id="welcomeTitle" style="font-size: 16px;">Ciao 👋</h1>
+                <h1 id="welcomeTitle" style="font-size: 15px;">Ciao 👋</h1>
                 <div style="display: flex; flex-wrap: wrap; gap: 6px; align-items: center;">
                     <button class="status-pill" id="myStatusBtn" onclick="cycleMyStatus()">🟢 Libero</button>
                     <span class="partner-status" id="partnerStatusLabel">Partner: in attesa...</span>
                 </div>
             </div>
-            <button onclick="leaveRoom()" style="background: var(--border); border: none; padding: 6px 12px; border-radius: 8px; font-size: 12px; cursor: pointer;">Esci</button>
+            <div style="display: flex; gap: 4px;">
+                <button onclick="toggleDarkMode()" class="btn-icon" title="Tema Scuro/Chiaro" style="font-size:18px;">🌙</button>
+                <button onclick="cycleTheme()" class="btn-icon" title="Cambia Colore" style="font-size:18px;">🎨</button>
+                <button onclick="leaveRoom()" style="background: var(--border); border: none; padding: 4px 8px; border-radius: 6px; font-size: 11px; cursor: pointer;">Esci</button>
+            </div>
         </header>
 
         <!-- FLOATING ACTION BUTTON CONTESTUALE -->
         <button class="fab" onclick="openQuickAdd()">+</button>
 
         <div class="container">
-            <div style="margin-bottom: 16px;">
+            <div style="margin-bottom: 12px;">
                 <input type="text" id="globalSearch" placeholder="🔍 Cerca ovunque..." oninput="renderAll()">
+            </div>
+
+            <!-- FILTRO RAPIDO TRASVERSALE (Assegnazione) -->
+            <div class="settings-bar">
+                <label style="font-size: 10px; margin-bottom:0;">Filtro rapido:</label>
+                <select id="globalOwnerFilter" onchange="renderAll()" style="width: auto; padding: 3px 6px; font-size: 11px;">
+                    <option value="all">Tutti</option>
+                    <option value="mine">Miei</option>
+                    <option value="theirs">Del Partner</option>
+                    <option value="both">In Comune</option>
+                </select>
             </div>
 
             <!-- SEZIONE HOME -->
             <section id="home" class="section active">
+                <div id="countdownContainer"></div>
+
                 <div class="card" style="background: var(--primary-light); border-color: var(--primary);">
                     <div class="card-title" style="color: var(--primary);">💡 Stato Giornata</div>
                     <p id="freeTimeSuggestion" style="font-size: 13px; margin-top: 4px;">Analisi in corso...</p>
@@ -536,7 +605,7 @@
         </nav>
     </div>
 
-    <!-- MODAL QUICK ADD CONTESTUALE -->
+    <!-- MODAL QUICK ADD CONTESTUALE + VOCALE + SUGGERIMENTI -->
     <div id="quickAddModal" class="modal">
         <div class="modal-content">
             <h3 style="margin-bottom: 12px;">Aggiunta Rapida</h3>
@@ -552,7 +621,21 @@
                 </select>
             </div>
             <div class="form-group">
-                <input type="text" id="quickTitle" placeholder="Titolo / Nome...">
+                <div style="display: flex; gap: 6px;">
+                    <input type="text" id="quickTitle" placeholder="Titolo / Nome..." style="flex:1;">
+                    <button type="button" onclick="startVoiceRecognition()" style="background: var(--border); border: none; border-radius: 8px; padding: 0 10px; cursor: pointer;" title="Detta a voce">🎙️</button>
+                </div>
+                <!-- Suggerimenti rapidi spesa -->
+                <div id="grocerySuggestionsContainer" style="display: none;">
+                    <div style="font-size: 10px; color: var(--gray); margin-top: 4px;">Frequenti:</div>
+                    <div class="quick-suggestions">
+                        <button type="button" class="suggestion-chip" onclick="fillQuickTitle('Latte')">Latte</button>
+                        <button type="button" class="suggestion-chip" onclick="fillQuickTitle('Caffè')">Caffè</button>
+                        <button type="button" class="suggestion-chip" onclick="fillQuickTitle('Pane')">Pane</button>
+                        <button type="button" class="suggestion-chip" onclick="fillQuickTitle('Acqua')">Acqua</button>
+                        <button type="button" class="suggestion-chip" onclick="fillQuickTitle('Uova')">Uova</button>
+                    </div>
+                </div>
             </div>
             
             <!-- CAMPI PER EVENTO -->
@@ -656,7 +739,7 @@
         </div>
     </div>
 
-    <!-- LOGICA FIREBASE E AUTOMAZIONI -->
+    <!-- LOGICA FIREBASE E UI SMART -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js";
         import { getFirestore, collection, addDoc, updateDoc, deleteDoc, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js";
@@ -692,14 +775,52 @@
         let isSavingQuick = false;
         let logsCollapsed = false;
 
-        const STATUS_LIST = [
-            "🟢 Libero",
-            "💼 Impegnato",
-            "🚗 Sto tornando",
-            "🛒 A fare la spesa",
-            "😴 Riposo"
-        ];
+        const STATUS_LIST = ["🟢 Libero", "💼 Impegnato", "🚗 Sto tornando", "🛒 A fare la spesa", "😴 Riposo"];
         let myStatusIndex = 0;
+
+        // Gestione Temi UI
+        const THEMES = ['', 'theme-lavender', 'theme-sage', 'theme-midnight'];
+        let currentThemeIndex = parseInt(localStorage.getItem('oursync_theme_idx') || '0');
+        let isDarkMode = localStorage.getItem('oursync_dark') === 'true';
+
+        window.applyThemeSettings = function() {
+            const body = document.getElementById('appBody');
+            body.className = '';
+            if (THEMES[currentThemeIndex]) body.classList.add(THEMES[currentThemeIndex]);
+            if (isDarkMode) body.classList.add('dark-mode');
+        };
+
+        window.cycleTheme = function() {
+            currentThemeIndex = (currentThemeIndex + 1) % THEMES.length;
+            localStorage.setItem('oursync_theme_idx', currentThemeIndex);
+            applyThemeSettings();
+        };
+
+        window.toggleDarkMode = function() {
+            isDarkMode = !isDarkMode;
+            localStorage.setItem('oursync_dark', isDarkMode);
+            applyThemeSettings();
+        };
+
+        // Riconoscimento Vocale Smart
+        window.startVoiceRecognition = function() {
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            if (!SpeechRecognition) {
+                alert("Il tuo browser non supporta la dettatura vocale.");
+                return;
+            }
+            const recognition = new SpeechRecognition();
+            recognition.lang = 'it-IT';
+            recognition.onresult = (event) => {
+                const speechText = event.results[0][0].transcript;
+                document.getElementById('quickTitle').value = speechText;
+            };
+            recognition.start();
+        };
+
+        window.fillQuickTitle = function(text) {
+            document.getElementById('quickTitle').value = text;
+        };
 
         function detectGroceryAisle(itemName) {
             const name = itemName.toLowerCase();
@@ -743,6 +864,7 @@
                 document.getElementById('roomScreen').style.display = 'none';
                 document.getElementById('mainApp').style.display = 'block';
                 document.getElementById('welcomeTitle').textContent = `Ciao, ${currentUserName} 👋`;
+                applyThemeSettings();
                 updateMyStatusFirestore(STATUS_LIST[0]);
                 renderVisualCalendar();
                 initRealtimeListeners();
@@ -750,43 +872,15 @@
         }
 
         function initRealtimeListeners() {
-            onSnapshot(collection(db, `rooms/${currentRoomId}/events`), s => {
-                events = s.docs.map(d => ({ id: d.id, ...d.data() }));
-                renderAll();
-            });
-            onSnapshot(collection(db, `rooms/${currentRoomId}/tasks`), s => {
-                tasks = s.docs.map(d => ({ id: d.id, ...d.data() }));
-                renderAll();
-            });
-            onSnapshot(collection(db, `rooms/${currentRoomId}/lists`), s => {
-                lists = s.docs.map(d => ({ id: d.id, ...d.data() }));
-                renderAll();
-            });
-            onSnapshot(collection(db, `rooms/${currentRoomId}/deadlines`), s => {
-                deadlines = s.docs.map(d => ({ id: d.id, ...d.data() }));
-                renderAll();
-            });
-            onSnapshot(collection(db, `rooms/${currentRoomId}/expenses`), s => {
-                expenses = s.docs.map(d => ({ id: d.id, ...d.data() }));
-                renderAll();
-            });
-            onSnapshot(collection(db, `rooms/${currentRoomId}/ideas`), s => {
-                ideas = s.docs.map(d => ({ id: d.id, ...d.data() }));
-                renderAll();
-            });
-            onSnapshot(collection(db, `rooms/${currentRoomId}/notes`), s => {
-                notes = s.docs.map(d => ({ id: d.id, ...d.data() }));
-                renderAll();
-            });
-            onSnapshot(collection(db, `rooms/${currentRoomId}/logs`), s => {
-                activityLogs = s.docs.map(d => ({ id: d.id, ...d.data() }));
-                renderAll();
-            });
-            onSnapshot(collection(db, `rooms/${currentRoomId}/statuses`), s => {
-                statuses = {};
-                s.docs.forEach(d => { statuses[d.id] = d.data(); });
-                renderStatuses();
-            });
+            onSnapshot(collection(db, `rooms/${currentRoomId}/events`), s => { events = s.docs.map(d => ({ id: d.id, ...d.data() })); renderAll(); });
+            onSnapshot(collection(db, `rooms/${currentRoomId}/tasks`), s => { tasks = s.docs.map(d => ({ id: d.id, ...d.data() })); renderAll(); });
+            onSnapshot(collection(db, `rooms/${currentRoomId}/lists`), s => { lists = s.docs.map(d => ({ id: d.id, ...d.data() })); renderAll(); });
+            onSnapshot(collection(db, `rooms/${currentRoomId}/deadlines`), s => { deadlines = s.docs.map(d => ({ id: d.id, ...d.data() })); renderAll(); });
+            onSnapshot(collection(db, `rooms/${currentRoomId}/expenses`), s => { expenses = s.docs.map(d => ({ id: d.id, ...d.data() })); renderAll(); });
+            onSnapshot(collection(db, `rooms/${currentRoomId}/ideas`), s => { ideas = s.docs.map(d => ({ id: d.id, ...d.data() })); renderAll(); });
+            onSnapshot(collection(db, `rooms/${currentRoomId}/notes`), s => { notes = s.docs.map(d => ({ id: d.id, ...d.data() })); renderAll(); });
+            onSnapshot(collection(db, `rooms/${currentRoomId}/logs`), s => { activityLogs = s.docs.map(d => ({ id: d.id, ...d.data() })); renderAll(); });
+            onSnapshot(collection(db, `rooms/${currentRoomId}/statuses`), s => { statuses = {}; s.docs.forEach(d => { statuses[d.id] = d.data(); }); renderStatuses(); });
         }
 
         window.cycleMyStatus = async function() {
@@ -964,6 +1058,9 @@
         window.toggleQuickFields = function() {
             const type = document.getElementById('quickType').value;
             document.querySelectorAll('.type-fields').forEach(el => el.style.display = 'none');
+            const suggestionsEl = document.getElementById('grocerySuggestionsContainer');
+            if (suggestionsEl) suggestionsEl.style.display = (type === 'list') ? 'block' : 'none';
+
             if (type === 'event') document.getElementById('quickEventFields').style.display = 'block';
             if (type === 'deadline') document.getElementById('quickDeadlineFields').style.display = 'block';
             if (type === 'task') document.getElementById('quickTaskFields').style.display = 'block';
@@ -1046,16 +1143,12 @@
             }
         };
 
-        // Gestione Azioni Liste
         window.toggleTask = async (id, status, title, recurrence) => {
             const nextStatus = !status;
             await updateDoc(doc(db, `rooms/${currentRoomId}/tasks`, id), { completed: nextStatus });
             if (nextStatus && recurrence && recurrence !== 'none') {
                 await addDoc(collection(db, `rooms/${currentRoomId}/tasks`), {
-                    title,
-                    completed: false,
-                    recurrence,
-                    createdBy: currentUserName
+                    title, completed: false, recurrence, createdBy: currentUserName
                 });
                 await logAction(`🔄 ha completato e rinnovato automaticamente la task "${title}"`);
             } else {
@@ -1078,12 +1171,7 @@
             if (recurrence && recurrence !== 'none') {
                 const nextDate = getNextDate(date, recurrence);
                 await addDoc(collection(db, `rooms/${currentRoomId}/deadlines`), {
-                    title,
-                    date: nextDate,
-                    owner,
-                    recurrence,
-                    showInCal: showInCal !== false,
-                    createdBy: currentUserName
+                    title, date: nextDate, owner, recurrence, showInCal: showInCal !== false, createdBy: currentUserName
                 });
                 await logAction(`🔄 ha saldato "${title}" (prossima: ${formatItalianDate(nextDate)})`);
             } else {
@@ -1116,11 +1204,7 @@
         window.promoteIdeaToEvent = async function(id, title) {
             const todayStr = new Date().toISOString().split('T')[0];
             await addDoc(collection(db, `rooms/${currentRoomId}/events`), {
-                title,
-                date: todayStr,
-                category: '❤️ Coppia',
-                owner: 'both',
-                createdBy: currentUserName
+                title, date: todayStr, category: '❤️ Coppia', owner: 'both', createdBy: currentUserName
             });
             await deleteDoc(doc(db, `rooms/${currentRoomId}/ideas`, id));
             await logAction(`📅 ha trasformato l'idea "${title}" in un evento per oggi!`);
@@ -1148,8 +1232,30 @@
         function renderAll() {
             const todayStr = new Date().toISOString().split('T')[0];
             const searchQuery = document.getElementById('globalSearch').value.toLowerCase();
+            const globalOwnerFilter = document.getElementById('globalOwnerFilter').value;
             
             renderVisualCalendar();
+
+            // Calcolo Countdown per il prossimo evento o viaggio
+            const futureEvents = [...events, ...deadlines].filter(item => item.date >= todayStr).sort((a,b) => new Date(a.date) - new Date(b.date));
+            const countdownEl = document.getElementById('countdownContainer');
+            if (futureEvents.length > 0) {
+                const nextItem = futureEvents[0];
+                const diffDays = Math.ceil((new Date(nextItem.date) - new Date(todayStr)) / (1000 * 60 * 60 * 24));
+                countdownEl.innerHTML = `
+                    <div class="countdown-card">
+                        <div>
+                            <div style="font-size:11px; opacity:0.9; text-transform:uppercase; font-weight:700;">⏳ Prossimo appuntamento</div>
+                            <div style="font-size:15px; font-weight:bold; margin-top:2px;">${nextItem.title}</div>
+                        </div>
+                        <div style="text-align:right;">
+                            <span style="font-size:22px; font-weight:bold;">${diffDays === 0 ? 'Oggi' : 'Tra ' + diffDays + 'g'}</span>
+                        </div>
+                    </div>
+                `;
+            } else {
+                countdownEl.innerHTML = '';
+            }
 
             const todayEvents = events.filter(e => e.date === todayStr);
             const todayDeadlines = deadlines.filter(d => d.date === todayStr);
@@ -1158,16 +1264,20 @@
                 ? `Nessun impegno individuale oggi${todayDeadlines.length ? `, ma hai ${todayDeadlines.length} scadenza/e oggi` : ': siete entrambi liberi!'}` 
                 : `Ci sono ${todayEvents.length} eventi programmati per oggi.`;
 
+            // Filtraggio globale per assegnazione
+            const filterByOwner = (item) => {
+                if (globalOwnerFilter === 'all') return true;
+                return (item.owner || 'both') === globalOwnerFilter;
+            };
+
             // Home Today
-            document.getElementById('todayList').innerHTML = todayEvents.length ? todayEvents.map(e => `
+            document.getElementById('todayList').innerHTML = todayEvents.filter(filterByOwner).length ? todayEvents.filter(filterByOwner).map(e => `
                 <div class="card">
-                    <div class="action-btns">
-                        <button class="btn-icon" onclick="sendNudge('${e.title}')">🔔</button>
-                    </div>
+                    <div class="action-btns"><button class="btn-icon" onclick="sendNudge('${e.title}')">🔔</button></div>
                     <div class="card-title">${e.category || ''} ${e.title}</div>
                     <span class="badge badge-${e.owner || 'both'}">${e.owner || 'both'}</span>
                 </div>
-            `).join('') : '<div class="card card-sub">Nessun evento per oggi.</div>';
+            `).join('') : '<div class="card card-sub">Nessun evento per oggi con questo filtro.</div>';
 
             // Home Tasks
             const openTasks = tasks.filter(t => !t.completed);
@@ -1182,13 +1292,11 @@
             `).join('') : '<div class="card card-sub">Tutte le attività completate! 🎉</div>';
 
             // Home Deadlines
-            document.getElementById('deadlinesHome').innerHTML = deadlines.length ? deadlines.slice(0, 3).map(d => {
+            document.getElementById('deadlinesHome').innerHTML = deadlines.filter(filterByOwner).length ? deadlines.filter(filterByOwner).slice(0, 3).map(d => {
                 const diffDays = Math.ceil((new Date(d.date) - new Date(todayStr)) / (1000 * 60 * 60 * 24));
                 return `
                     <div class="card">
-                        <div class="action-btns">
-                            <button class="btn-icon" onclick="sendNudge('${d.title}')">🔔</button>
-                        </div>
+                        <div class="action-btns"><button class="btn-icon" onclick="sendNudge('${d.title}')">🔔</button></div>
                         <div class="card-title">${d.title} ${d.recurrence && d.recurrence !== 'none' ? '🔄' : ''}</div>
                         <div class="card-sub">Scadenza: ${formatItalianDate(d.date)} (${diffDays >= 0 ? 'Tra ' + diffDays + ' giorni' : 'Scaduto'})</div>
                         <span class="badge badge-${d.owner || 'both'}">${d.owner || 'both'}</span>
@@ -1208,6 +1316,7 @@
             let filteredEvents = events.filter(e => {
                 if (selectedCalDate && e.date !== selectedCalDate) return false;
                 if (filterValue !== 'all' && e.owner !== filterValue) return false;
+                if (globalOwnerFilter !== 'all' && e.owner !== globalOwnerFilter) return false;
                 if (searchQuery && !e.title.toLowerCase().includes(searchQuery)) return false;
                 return true;
             });
@@ -1215,7 +1324,7 @@
 
             let calDeadlinesHtml = '';
             if (selectedCalDate) {
-                const dayDls = deadlines.filter(d => d.date === selectedCalDate && d.showInCal !== false);
+                const dayDls = deadlines.filter(d => d.date === selectedCalDate && d.showInCal !== false && filterByOwner(d));
                 calDeadlinesHtml = dayDls.map(d => `
                     <div class="card" style="border-left: 4px solid var(--warning);">
                         <div class="card-title">⏳ Scadenza: ${d.title}</div>
@@ -1228,7 +1337,7 @@
             const eventsHtml = filteredEvents.map(e => `
                 <div class="card">
                     <div class="action-btns">
-                        <button class="btn-icon" onclick="downloadICS('${e.title}', '${e.date}')" title="Esporta sul telefono">📅</button>
+                        <button class="btn-icon" onclick="downloadICS('${e.title}', '${e.date}')" title="Esporta">📅</button>
                         <button class="btn-icon" onclick="sendNudge('${e.title}')" title="Ricorda">🔔</button>
                         <button class="delete-btn" onclick="deleteEvent('${e.id}', '${e.title}')">Elimina</button>
                     </div>
@@ -1238,7 +1347,7 @@
                 </div>
             `).join('');
 
-            document.getElementById('eventsContainer').innerHTML = (calDeadlinesHtml + eventsHtml) || `<div class="card card-sub">${selectedCalDate ? 'Nessun impegno per questo giorno.' : 'Nessun evento trovato.'}</div>`;
+            document.getElementById('eventsContainer').innerHTML = (calDeadlinesHtml + eventsHtml) || `<div class="card card-sub">Nessun impegno trovato.</div>`;
 
             // Tasks View
             document.getElementById('tasksContainer').innerHTML = tasks.filter(t => !searchQuery || t.title.toLowerCase().includes(searchQuery)).map(t => `
@@ -1253,7 +1362,7 @@
                         <button onclick="deleteTask('${t.id}')" style="background:none; border:none; color:var(--danger); cursor:pointer;">🗑️</button>
                     </div>
                 </div>
-            `).join('') || '<div class="card card-sub">Nessuna attività inserita. Usa il tasto + in basso per aggiungerne una.</div>';
+            `).join('') || '<div class="card card-sub">Nessuna attività inserita.</div>';
 
             // Spesa Raggruppata
             const filteredLists = lists.filter(l => !searchQuery || l.title.toLowerCase().includes(searchQuery));
@@ -1277,11 +1386,11 @@
                     `).join('')}
                 `).join('');
             } else {
-                document.getElementById('listsContainer').innerHTML = '<div class="card card-sub">Lista della spesa vuota. Usa il tasto + per aggiungere articoli.</div>';
+                document.getElementById('listsContainer').innerHTML = '<div class="card card-sub">Lista della spesa vuota.</div>';
             }
 
             // Deadlines View
-            const sortedDeadlines = [...deadlines].filter(d => !searchQuery || d.title.toLowerCase().includes(searchQuery)).sort((a,b) => new Date(a.date) - new Date(b.date));
+            const sortedDeadlines = [...deadlines].filter(d => (!searchQuery || d.title.toLowerCase().includes(searchQuery)) && filterByOwner(d)).sort((a,b) => new Date(a.date) - new Date(b.date));
             document.getElementById('deadlinesContainer').innerHTML = sortedDeadlines.map(d => `
                 <div class="card">
                     <div class="action-btns">
