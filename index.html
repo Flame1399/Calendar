@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>❤️ OurSync - Planner di Coppia</title>
+    <title>❤️ OurSync v4.0 - Smart Planner di Coppia</title>
     
     <meta name="theme-color" content="#FF6B6B">
     <meta name="mobile-web-app-capable" content="yes">
@@ -16,6 +16,7 @@
             --primary-light: #FFE3E3;
             --secondary: #4A90E2;
             --purple: #9B51E0;
+            --green: #38A169;
             --bg: #F8F9FA;
             --text: #2D3748;
             --gray: #718096;
@@ -35,14 +36,14 @@
         body {
             background-color: var(--bg);
             color: var(--text);
-            padding-bottom: 80px;
+            padding-bottom: 85px;
             max-width: 600px;
             margin: 0 auto;
         }
 
         header {
             background: var(--white);
-            padding: 16px;
+            padding: 12px 16px;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -50,31 +51,51 @@
             position: sticky;
             top: 0;
             z-index: 100;
+            gap: 8px;
         }
 
-        .container {
-            padding: 16px;
+        .status-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 4px;
         }
 
-        .section {
-            display: none;
+        .partner-status {
+            font-size: 11px;
+            color: var(--gray);
+            background: #EDF2F7;
+            padding: 3px 8px;
+            border-radius: 12px;
+            display: inline-block;
+            margin-top: 4px;
         }
 
-        .section.active {
-            display: block;
-        }
+        .container { padding: 16px; }
+        .section { display: none; }
+        .section.active { display: block; }
 
         h2 {
-            font-size: 18px;
-            margin-bottom: 12px;
+            font-size: 17px;
+            margin-bottom: 10px;
             color: var(--text);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
         }
 
         .card {
             background: var(--white);
             border-radius: 12px;
-            padding: 16px;
-            margin-bottom: 12px;
+            padding: 14px;
+            margin-bottom: 10px;
             border: 1px solid var(--border);
             box-shadow: 0 2px 4px rgba(0,0,0,0.01);
             position: relative;
@@ -93,34 +114,47 @@
 
         .badge {
             display: inline-block;
-            padding: 4px 8px;
+            padding: 3px 8px;
             border-radius: 10px;
             font-size: 10px;
             font-weight: 600;
             text-transform: uppercase;
             margin-top: 6px;
+            margin-right: 4px;
         }
 
         .badge-mine { background: #EBF8FF; color: #2B6CB0; }
         .badge-theirs { background: #FFE3E3; color: #C53030; }
         .badge-both { background: #FAF5FF; color: #6B46C1; }
+        .badge-recur { background: #E6FFFA; color: #2C7A7B; }
 
         .action-btns {
             float: right;
             display: flex;
             gap: 6px;
+            align-items: center;
         }
 
         .btn-icon {
             background: none;
             border: none;
             cursor: pointer;
-            font-size: 14px;
+            font-size: 15px;
             padding: 2px 4px;
         }
 
+        .btn-small {
+            background: var(--primary-light);
+            color: var(--primary);
+            border: none;
+            padding: 5px 10px;
+            border-radius: 8px;
+            font-size: 11px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
         .delete-btn {
-            float: right;
             background: none;
             border: none;
             color: var(--danger);
@@ -133,16 +167,16 @@
             position: fixed;
             bottom: 75px;
             right: 20px;
-            width: 50px;
-            height: 50px;
-            border-radius: 25px;
+            width: 52px;
+            height: 52px;
+            border-radius: 26px;
             background: var(--primary);
             color: white;
             display: flex;
             justify-content: center;
             align-items: center;
-            font-size: 24px;
-            box-shadow: 0 4px 10px rgba(255, 107, 107, 0.4);
+            font-size: 26px;
+            box-shadow: 0 4px 12px rgba(255, 107, 107, 0.45);
             border: none;
             cursor: pointer;
             z-index: 99;
@@ -152,7 +186,7 @@
             display: none;
             position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0,0,0,0.4);
+            background: rgba(0,0,0,0.45);
             z-index: 1000;
             justify-content: center;
             align-items: flex-end;
@@ -193,20 +227,22 @@
             border-top: 1px solid var(--border);
             display: flex;
             justify-content: space-around;
-            padding: 10px 0;
+            padding: 8px 0;
             max-width: 600px;
             margin: 0 auto;
             z-index: 100;
+            overflow-x: auto;
         }
 
         .nav-item {
             background: none; border: none;
-            font-size: 10px; color: var(--gray);
+            font-size: 9px; color: var(--gray);
             display: flex; flex-direction: column; align-items: center; gap: 2px;
             cursor: pointer;
+            min-width: 48px;
         }
 
-        .nav-item.active { color: var(--primary); font-weight: 600; }
+        .nav-item.active { color: var(--primary); font-weight: 700; }
         .nav-item span.icon { font-size: 16px; }
 
         .form-group { margin-bottom: 12px; width: 100%; }
@@ -229,10 +265,16 @@
             appearance: none;
             min-height: 40px;
         }
-        button.primary-btn { width: 100%; background: var(--primary); color: var(--white); border: none; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer; margin-top: 8px; }
+        input[type="checkbox"] {
+            display: inline-block;
+            width: 18px;
+            height: 18px;
+            accent-color: var(--primary);
+        }
+        button.primary-btn { width: 100%; background: var(--primary); color: var(--white); border: none; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer; margin-top: 6px; }
         button.primary-btn:disabled { opacity: 0.6; cursor: not-allowed; }
 
-        /* STILI CALENDARIO VISIVO */
+        /* CALENDARIO VISIVO */
         .calendar-header {
             display: flex;
             justify-content: space-between;
@@ -255,7 +297,7 @@
         }
 
         .cal-cell {
-            height: 40px;
+            height: 42px;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -268,48 +310,59 @@
             position: relative;
         }
 
-        .cal-cell.empty {
-            background: transparent;
-            cursor: default;
-        }
-
-        .cal-cell.today {
-            border-color: var(--primary);
-            font-weight: bold;
-            color: var(--primary);
-        }
-
-        .cal-cell.selected {
-            background: var(--primary);
-            color: var(--white);
-            font-weight: bold;
-        }
+        .cal-cell.empty { background: transparent; cursor: default; }
+        .cal-cell.today { border-color: var(--primary); font-weight: bold; color: var(--primary); }
+        .cal-cell.selected { background: var(--primary); color: var(--white); font-weight: bold; }
 
         .cal-dots {
             display: flex;
             gap: 2px;
             margin-top: 2px;
             height: 5px;
+            align-items: center;
         }
 
-        .dot {
-            width: 5px;
-            height: 5px;
-            border-radius: 50%;
-        }
-
+        .dot { width: 5px; height: 5px; border-radius: 50%; }
+        .dot-dl { width: 5px; height: 5px; border-radius: 1px; background-color: var(--warning); }
         .dot-mine { background-color: #2B6CB0; }
         .dot-theirs { background-color: #E53E3E; }
         .dot-both { background-color: #805AD5; }
-        .cal-cell.selected .dot { background-color: #FFFFFF; }
+        .cal-cell.selected .dot, .cal-cell.selected .dot-dl { background-color: #FFFFFF; }
+
+        /* CATEGORIE SPESA */
+        .aisle-header {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--gray);
+            text-transform: uppercase;
+            margin: 14px 0 6px 2px;
+            letter-spacing: 0.5px;
+        }
+
+        /* BALANCE CARD */
+        .balance-box {
+            background: linear-gradient(135deg, #2B6CB0, #4A90E2);
+            color: white;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 14px;
+        }
+
+        .checkbox-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
 
     <!-- SCHERMATA ACCESSO STANZA -->
     <div id="roomScreen">
-        <h1 style="text-align: center; color: var(--primary); margin-bottom: 8px;">❤️ OurSync v3.9</h1>
-        <p style="text-align: center; color: var(--gray); font-size: 13px; margin-bottom: 24px;">Inserisci lo stesso ID Stanza su entrambi i telefoni per connettervi</p>
+        <h1 style="text-align: center; color: var(--primary); margin-bottom: 8px;">❤️ OurSync v4.0</h1>
+        <p style="text-align: center; color: var(--gray); font-size: 13px; margin-bottom: 24px;">Smart Planner & Automazioni di Coppia</p>
         
         <div class="form-group">
             <label>ID Stanza Condivisa</label>
@@ -327,23 +380,26 @@
         <header>
             <div>
                 <h1 id="welcomeTitle" style="font-size: 16px;">Ciao 👋</h1>
-                <p id="roomSub" style="font-size: 11px; color: var(--gray);"></p>
+                <div style="display: flex; flex-wrap: wrap; gap: 6px; align-items: center;">
+                    <button class="status-pill" id="myStatusBtn" onclick="cycleMyStatus()">🟢 Libero</button>
+                    <span class="partner-status" id="partnerStatusLabel">Partner: in attesa...</span>
+                </div>
             </div>
             <button onclick="leaveRoom()" style="background: var(--border); border: none; padding: 6px 12px; border-radius: 8px; font-size: 12px; cursor: pointer;">Esci</button>
         </header>
 
-        <!-- FLOATING ACTION BUTTON -->
+        <!-- FLOATING ACTION BUTTON CONTESTUALE -->
         <button class="fab" onclick="openQuickAdd()">+</button>
 
         <div class="container">
             <div style="margin-bottom: 16px;">
-                <input type="text" id="globalSearch" placeholder="🔍 Cerca ovunque..." oninput="renderAll()">
+                <input type="text" id="globalSearch" placeholder="🔍 Cerca eventi, spese, scadenze, idee..." oninput="renderAll()">
             </div>
 
             <!-- SEZIONE HOME -->
             <section id="home" class="section active">
                 <div class="card" style="background: var(--primary-light); border-color: var(--primary);">
-                    <div class="card-title" style="color: var(--primary);">💡 Prossimo Tempo Libero Insieme</div>
+                    <div class="card-title" style="color: var(--primary);">💡 Stato Giornata</div>
                     <p id="freeTimeSuggestion" style="font-size: 13px; margin-top: 4px;">Analisi in corso...</p>
                 </div>
 
@@ -356,7 +412,10 @@
                 <h2>⏳ Scadenze Imminenti</h2>
                 <div id="deadlinesHome"></div>
 
-                <h2>🔔 Centro Notifiche in Tempo Reale</h2>
+                <h2>
+                    <span>🔔 Attività Recenti</span>
+                    <button class="btn-small" onclick="toggleLogs()" id="toggleLogsBtn">Mostra/Nascondi</button>
+                </h2>
                 <div id="activityLogContainer"></div>
             </section>
 
@@ -379,6 +438,12 @@
                         <div class="cal-day-name">Dom</div>
                     </div>
                     <div id="calendarDaysGrid" class="calendar-grid"></div>
+                    <div style="font-size: 10px; color: var(--gray); margin-top: 8px; display: flex; gap: 10px; justify-content: center;">
+                        <span>🔵 Mio</span>
+                        <span>🔴 Partner</span>
+                        <span>🟣 Comune</span>
+                        <span>🟨 Scadenza</span>
+                    </div>
                 </div>
 
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; gap: 8px;">
@@ -396,13 +461,21 @@
                 <div id="eventsContainer"></div>
             </section>
 
-            <!-- SEZIONE ATTIVITÀ -->
+            <!-- SEZIONE ATTIVITÀ (TASK) -->
             <section id="tasks" class="section">
                 <h2>Nuova Task</h2>
                 <div class="card">
                     <div class="form-group">
                         <label>Cosa fare?</label>
-                        <input type="text" id="taskTitle" placeholder="Es. Fare la spesa">
+                        <input type="text" id="taskTitle" placeholder="Es. Pulire filtro lavatrice">
+                    </div>
+                    <div class="form-group">
+                        <label>Ricorrenza Automatica</label>
+                        <select id="taskRecurrence">
+                            <option value="none">Nessuna (Una volta sola)</option>
+                            <option value="weekly">Ogni settimana</option>
+                            <option value="monthly">Ogni mese</option>
+                        </select>
                     </div>
                     <button class="primary-btn" onclick="addTask()">Aggiungi Task</button>
                 </div>
@@ -410,17 +483,20 @@
                 <div id="tasksContainer"></div>
             </section>
 
-            <!-- SEZIONE SPESA -->
+            <!-- SEZIONE SPESA INTELLIGENTE -->
             <section id="lists" class="section">
-                <h2>Nuovo Elemento Spesa</h2>
+                <h2>Aggiungi alla Spesa</h2>
                 <div class="card">
                     <div class="form-group">
-                        <label>Cosa comprare?</label>
-                        <input type="text" id="listItemTitle" placeholder="Es. Latte, Caffè...">
+                        <label>Articolo (Riconoscimento reparto automatico)</label>
+                        <input type="text" id="listItemTitle" placeholder="Es. Latte, Mele, Pasta, Detersivo...">
                     </div>
-                    <button class="primary-btn" onclick="addListItem()">Aggiungi alla Lista</button>
+                    <button class="primary-btn" onclick="addListItem()">Aggiungi Articolo</button>
                 </div>
-                <h2>Lista della Spesa Condivisa</h2>
+                <h2>
+                    <span>Lista della Spesa</span>
+                    <button class="btn-small" onclick="clearCompletedGrocery()">🧹 Svuota presi</button>
+                </h2>
                 <div id="listsContainer"></div>
             </section>
 
@@ -430,7 +506,7 @@
                 <div class="card">
                     <div class="form-group">
                         <label>Nome Scadenza</label>
-                        <input type="text" id="dlTitle" placeholder="Es. Bollo auto">
+                        <input type="text" id="dlTitle" placeholder="Es. Affitto / Bolletta Luce">
                     </div>
                     <div class="form-group">
                         <label>Data di Scadenza</label>
@@ -444,10 +520,83 @@
                             <option value="theirs">Dell'altra persona</option>
                         </select>
                     </div>
+                    <div class="form-group">
+                        <label>Ricorrenza</label>
+                        <select id="dlRecurrence">
+                            <option value="none">Nessuna</option>
+                            <option value="monthly">Ogni mese (Auto-rinnovo)</option>
+                            <option value="yearly">Ogni anno</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="checkbox-row">
+                            <input type="checkbox" id="dlShowInCal" checked>
+                            <span>Mostra anche nel Calendario Visivo</span>
+                        </label>
+                    </div>
                     <button class="primary-btn" onclick="addDeadline()">Aggiungi Scadenza</button>
                 </div>
                 <h2>Tutte le Scadenze</h2>
                 <div id="deadlinesContainer"></div>
+            </section>
+
+            <!-- SEZIONE SPESE CONDIVISE (SPLIT TRACKER) -->
+            <section id="expenses" class="section">
+                <div class="balance-box">
+                    <div style="font-size: 12px; opacity: 0.9;">Bilancio di Coppia</div>
+                    <div id="balanceSummaryText" style="font-size: 18px; font-weight: 700; margin-top: 4px;">Siete in pari! 🤝</div>
+                </div>
+
+                <h2>Registra Spesa</h2>
+                <div class="card">
+                    <div class="form-group">
+                        <label>Descrizione</label>
+                        <input type="text" id="expTitle" placeholder="Es. Spesa Esselunga / Cena pizzeria">
+                    </div>
+                    <div class="form-group">
+                        <label>Importo (€)</label>
+                        <input type="number" step="0.01" id="expAmount" placeholder="Es. 45.50">
+                    </div>
+                    <div class="form-group">
+                        <label>Chi ha pagato?</label>
+                        <select id="expPaidBy">
+                            <option value="mine">Io</option>
+                            <option value="theirs">L'altra persona</option>
+                        </select>
+                    </div>
+                    <button class="primary-btn" onclick="addExpense()">Salva Spesa</button>
+                </div>
+                <h2>Storico Spese</h2>
+                <div id="expensesContainer"></div>
+            </section>
+
+            <!-- SEZIONE WISHLIST & IDEE DI COPPIA -->
+            <section id="ideas" class="section">
+                <div class="card" style="background: #FAF5FF; border-color: var(--purple); text-align: center;">
+                    <div class="card-title" style="color: var(--purple);">🎲 Indecisi su cosa fare?</div>
+                    <p id="randomIdeaResult" style="font-size: 13px; margin: 6px 0;">Estrai un'idea a sorte dalla vostra lista!</p>
+                    <button class="primary-btn" style="background: var(--purple);" onclick="pickRandomIdea()">Estrai un'Idea a Sorte</button>
+                </div>
+
+                <h2>Nuova Idea / Desiderio</h2>
+                <div class="card">
+                    <div class="form-group">
+                        <label>Cosa vorreste fare / vedere / provare?</label>
+                        <input type="text" id="ideaTitle" placeholder="Es. Ristorante giapponese in centro">
+                    </div>
+                    <div class="form-group">
+                        <label>Categoria</label>
+                        <select id="ideaTag">
+                            <option value="🍝 Ristoranti">🍝 Ristoranti</option>
+                            <option value="🎬 Film & Serie">🎬 Film & Serie</option>
+                            <option value="✈️ Viaggi & Gite">✈️ Viaggi & Gite</option>
+                            <option value="🎁 Regali & Casa">🎁 Regali & Casa</option>
+                        </select>
+                    </div>
+                    <button class="primary-btn" onclick="addIdea()">Salva Idea</button>
+                </div>
+                <h2>Le Vostre Idee</h2>
+                <div id="ideasContainer"></div>
             </section>
 
             <!-- SEZIONE NOTE -->
@@ -482,7 +631,7 @@
                 <span class="icon">🏠</span> Home
             </button>
             <button class="nav-item" onclick="switchTab('calendar', this)">
-                <span class="icon">📅</span> Calendario
+                <span class="icon">📅</span> Cal
             </button>
             <button class="nav-item" onclick="switchTab('tasks', this)">
                 <span class="icon">✅</span> Task
@@ -491,7 +640,13 @@
                 <span class="icon">🛒</span> Spesa
             </button>
             <button class="nav-item" onclick="switchTab('deadlines', this)">
-                <span class="icon">⏳</span> Scadenze
+                <span class="icon">⏳</span> Scad.
+            </button>
+            <button class="nav-item" onclick="switchTab('expenses', this)">
+                <span class="icon">💶</span> Conti
+            </button>
+            <button class="nav-item" onclick="switchTab('ideas', this)">
+                <span class="icon">💡</span> Idee
             </button>
             <button class="nav-item" onclick="switchTab('notes', this)">
                 <span class="icon">📝</span> Note
@@ -499,21 +654,23 @@
         </nav>
     </div>
 
-    <!-- MODAL QUICK ADD -->
+    <!-- MODAL QUICK ADD CONTESTUALE -->
     <div id="quickAddModal" class="modal">
         <div class="modal-content">
-            <h3 style="margin-bottom: 12px;">Cosa vuoi aggiungere?</h3>
+            <h3 style="margin-bottom: 12px;">Aggiunta Rapida</h3>
             <div class="form-group">
                 <select id="quickType" onchange="toggleQuickFields()">
                     <option value="event">📅 Nuovo Evento</option>
                     <option value="deadline">⏳ Nuova Scadenza</option>
                     <option value="task">✅ Nuova Task</option>
                     <option value="list">🛒 Elemento Spesa</option>
+                    <option value="expense">💶 Spesa Condivisa (€)</option>
+                    <option value="idea">💡 Idea / Wishlist</option>
                     <option value="note">📝 Nuova Nota</option>
                 </select>
             </div>
             <div class="form-group">
-                <input type="text" id="quickTitle" placeholder="Titolo...">
+                <input type="text" id="quickTitle" placeholder="Titolo / Nome...">
             </div>
             
             <!-- CAMPI PER EVENTO -->
@@ -556,6 +713,60 @@
                         <option value="theirs">Dell'altra persona</option>
                     </select>
                 </div>
+                <div class="form-group">
+                    <label>Ricorrenza</label>
+                    <select id="quickDlRecurrence">
+                        <option value="none">Nessuna</option>
+                        <option value="monthly">Ogni mese</option>
+                        <option value="yearly">Ogni anno</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="checkbox-row">
+                        <input type="checkbox" id="quickDlShowInCal" checked>
+                        <span>Mostra nel Calendario Visivo</span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- CAMPI PER TASK -->
+            <div id="quickTaskFields" class="type-fields" style="display: none;">
+                <div class="form-group">
+                    <label>Ricorrenza</label>
+                    <select id="quickTaskRecurrence">
+                        <option value="none">Nessuna</option>
+                        <option value="weekly">Ogni settimana</option>
+                        <option value="monthly">Ogni mese</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- CAMPI PER SPESA CONDIVISA (€) -->
+            <div id="quickExpenseFields" class="type-fields" style="display: none;">
+                <div class="form-group">
+                    <label>Importo (€)</label>
+                    <input type="number" step="0.01" id="quickExpAmount" placeholder="Es. 25.00">
+                </div>
+                <div class="form-group">
+                    <label>Chi ha pagato?</label>
+                    <select id="quickExpPaidBy">
+                        <option value="mine">Io</option>
+                        <option value="theirs">L'altra persona</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- CAMPI PER IDEA -->
+            <div id="quickIdeaFields" class="type-fields" style="display: none;">
+                <div class="form-group">
+                    <label>Categoria</label>
+                    <select id="quickIdeaTag">
+                        <option value="🍝 Ristoranti">🍝 Ristoranti</option>
+                        <option value="🎬 Film & Serie">🎬 Film & Serie</option>
+                        <option value="✈️ Viaggi & Gite">✈️ Viaggi & Gite</option>
+                        <option value="🎁 Regali & Casa">🎁 Regali & Casa</option>
+                    </select>
+                </div>
             </div>
 
             <button id="quickSaveBtn" class="primary-btn" onclick="saveQuickAdd()">Salva</button>
@@ -563,10 +774,10 @@
         </div>
     </div>
 
-    <!-- LOGICA FIREBASE E STANZA -->
+    <!-- LOGICA FIREBASE E AUTOMAZIONI -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js";
-        import { getFirestore, collection, addDoc, updateDoc, deleteDoc, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, updateDoc, deleteDoc, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "INSERISCI_LA_TUA_API_KEY",
@@ -582,34 +793,62 @@
 
         let currentRoomId = localStorage.getItem('oursync_room_id') || null;
         let currentUserName = localStorage.getItem('oursync_user_name') || null;
+        let activeTabId = 'home';
 
         let events = [];
         let tasks = [];
         let lists = [];
         let deadlines = [];
+        let expenses = [];
+        let ideas = [];
         let notes = [];
         let activityLogs = [];
+        let statuses = {};
 
         let currentCalDate = new Date();
         let selectedCalDate = null;
         let isSavingQuick = false;
+        let logsCollapsed = false;
 
-        let unsubEvents, unsubTasks, unsubLists, unsubDeadlines, unsubNotes, unsubLogs;
+        const STATUS_LIST = [
+            "🟢 Libero",
+            "💼 Impegnato",
+            "🚗 Sto tornando",
+            "🛒 A fare la spesa",
+            "😴 Riposo"
+        ];
+        let myStatusIndex = 0;
+
+        // Dizionario automatico reparti spesa
+        function detectGroceryAisle(itemName) {
+            const name = itemName.toLowerCase();
+            if (/latte|yogurt|formaggio|mozzarella|burro|panna|uova|parmigiano|ricotta/.test(name)) return "🥛 Latticini & Uova";
+            if (/mela|mele|banana|banane|pomodor|insalata|zucchin|patat|cipoll|aglio|limon|aranc|frutta|verdura|carot/.test(name)) return "🍎 Ortofrutta";
+            if (/pane|pasta|riso|farina|biscotti|fette|cereali|olio|sale|zucchero|caffè|caffe|tonno|passata|sugo/.test(name)) return "🍝 Dispensa & Forno";
+            if (/carne|pollo|pesce|prosciutto|salame|bresaola|salmone|tonno fresco|macinato/.test(name)) return "🥩 Carne, Pesce & Salumi";
+            if (/acqua|vino|birra|succo|bibita|coca|tè/.test(name)) return "🥤 Bevande";
+            if (/detersivo|sapone|carta|shampoo|dentifricio|spugna|sacchetti|candeggina/.test(name)) return "🧼 Casa & Igiene";
+            return "🛒 Varie";
+        }
+
+        // Calcolo data successiva per ricorrenze
+        function getNextDate(dateStr, recurrence) {
+            const d = new Date(dateStr || new Date().toISOString().split('T')[0]);
+            if (recurrence === 'weekly') d.setDate(d.getDate() + 7);
+            if (recurrence === 'monthly') d.setMonth(d.getMonth() + 1);
+            if (recurrence === 'yearly') d.setFullYear(d.getFullYear() + 1);
+            return d.toISOString().split('T')[0];
+        }
 
         window.joinRoom = function() {
             const roomId = document.getElementById('roomIdInput').value.trim().toLowerCase();
             const userName = document.getElementById('userNameInput').value.trim();
-
-            if (!roomId || !userName) {
-                return alert('Inserisci sia l\'ID stanza che il tuo nome');
-            }
+            if (!roomId || !userName) return alert('Inserisci sia l\'ID stanza che il tuo nome');
 
             currentRoomId = roomId;
             currentUserName = userName;
-
             localStorage.setItem('oursync_room_id', roomId);
             localStorage.setItem('oursync_user_name', userName);
-
             initApp();
         };
 
@@ -624,57 +863,91 @@
                 document.getElementById('roomScreen').style.display = 'none';
                 document.getElementById('mainApp').style.display = 'block';
                 document.getElementById('welcomeTitle').textContent = `Ciao, ${currentUserName} 👋`;
-                document.getElementById('roomSub').textContent = `Stanza: ${currentRoomId}`;
+                updateMyStatusFirestore(STATUS_LIST[0]);
                 renderVisualCalendar();
                 initRealtimeListeners();
             }
         }
 
         function initRealtimeListeners() {
-            unsubEvents = onSnapshot(collection(db, `rooms/${currentRoomId}/events`), (snapshot) => {
-                events = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            onSnapshot(collection(db, `rooms/${currentRoomId}/events`), s => {
+                events = s.docs.map(d => ({ id: d.id, ...d.data() }));
                 renderAll();
             });
-
-            unsubTasks = onSnapshot(collection(db, `rooms/${currentRoomId}/tasks`), (snapshot) => {
-                tasks = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            onSnapshot(collection(db, `rooms/${currentRoomId}/tasks`), s => {
+                tasks = s.docs.map(d => ({ id: d.id, ...d.data() }));
                 renderAll();
             });
-
-            unsubLists = onSnapshot(collection(db, `rooms/${currentRoomId}/lists`), (snapshot) => {
-                lists = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            onSnapshot(collection(db, `rooms/${currentRoomId}/lists`), s => {
+                lists = s.docs.map(d => ({ id: d.id, ...d.data() }));
                 renderAll();
             });
-
-            unsubDeadlines = onSnapshot(collection(db, `rooms/${currentRoomId}/deadlines`), (snapshot) => {
-                deadlines = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            onSnapshot(collection(db, `rooms/${currentRoomId}/deadlines`), s => {
+                deadlines = s.docs.map(d => ({ id: d.id, ...d.data() }));
                 renderAll();
             });
-
-            unsubNotes = onSnapshot(collection(db, `rooms/${currentRoomId}/notes`), (snapshot) => {
-                notes = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            onSnapshot(collection(db, `rooms/${currentRoomId}/expenses`), s => {
+                expenses = s.docs.map(d => ({ id: d.id, ...d.data() }));
                 renderAll();
             });
-
-            unsubLogs = onSnapshot(collection(db, `rooms/${currentRoomId}/logs`), (snapshot) => {
-                activityLogs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            onSnapshot(collection(db, `rooms/${currentRoomId}/ideas`), s => {
+                ideas = s.docs.map(d => ({ id: d.id, ...d.data() }));
                 renderAll();
+            });
+            onSnapshot(collection(db, `rooms/${currentRoomId}/notes`), s => {
+                notes = s.docs.map(d => ({ id: d.id, ...d.data() }));
+                renderAll();
+            });
+            onSnapshot(collection(db, `rooms/${currentRoomId}/logs`), s => {
+                activityLogs = s.docs.map(d => ({ id: d.id, ...d.data() }));
+                renderAll();
+            });
+            onSnapshot(collection(db, `rooms/${currentRoomId}/statuses`), s => {
+                statuses = {};
+                s.docs.forEach(d => { statuses[d.id] = d.data(); });
+                renderStatuses();
             });
         }
 
-        // Funzioni Calendario Visivo
+        // Gestione Stati Rapidi Header
+        window.cycleMyStatus = async function() {
+            myStatusIndex = (myStatusIndex + 1) % STATUS_LIST.length;
+            const newStatus = STATUS_LIST[myStatusIndex];
+            document.getElementById('myStatusBtn').textContent = newStatus;
+            await updateMyStatusFirestore(newStatus);
+        };
+
+        async function updateMyStatusFirestore(statusText) {
+            try {
+                await setDoc(doc(db, `rooms/${currentRoomId}/statuses`, currentUserName), {
+                    status: statusText,
+                    updatedAt: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+                });
+            } catch (e) { console.error(e); }
+        }
+
+        function renderStatuses() {
+            const partnerLabel = document.getElementById('partnerStatusLabel');
+            if (!partnerLabel) return;
+            const otherKeys = Object.keys(statuses).filter(k => k !== currentUserName);
+            if (otherKeys.length > 0) {
+                const pName = otherKeys[0];
+                const pData = statuses[pName];
+                partnerLabel.textContent = `${pName}: ${pData.status} (${pData.updatedAt})`;
+            } else {
+                partnerLabel.textContent = `Stanza: ${currentRoomId}`;
+            }
+        }
+
+        // Calendario Visivo (Include eventi + scadenze con showInCal)
         window.changeMonth = function(delta) {
             currentCalDate.setMonth(currentCalDate.getMonth() + delta);
             renderVisualCalendar();
         };
 
         window.selectCalDate = function(dateStr) {
-            if (selectedCalDate === dateStr) {
-                clearDateFilter();
-            } else {
-                selectedCalDate = dateStr;
-                renderAll();
-            }
+            selectedCalDate = (selectedCalDate === dateStr) ? null : dateStr;
+            renderAll();
         };
 
         window.clearDateFilter = function() {
@@ -685,8 +958,7 @@
         function formatItalianDate(dateStr) {
             if (!dateStr) return '';
             const parts = dateStr.split('-');
-            if (parts.length !== 3) return dateStr;
-            return `${parts[2]}/${parts[1]}/${parts[0]}`;
+            return parts.length === 3 ? `${parts[2]}/${parts[1]}/${parts[0]}` : dateStr;
         }
 
         function renderVisualCalendar() {
@@ -705,25 +977,24 @@
             const daysInMonth = new Date(year, month + 1, 0).getDate();
 
             let html = '';
-
-            for (let i = 0; i < startOffset; i++) {
-                html += `<div class="cal-cell empty"></div>`;
-            }
+            for (let i = 0; i < startOffset; i++) html += `<div class="cal-cell empty"></div>`;
 
             for (let day = 1; day <= daysInMonth; day++) {
                 const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
                 const dayEvents = events.filter(e => e.date === dateStr);
+                const dayDeadlines = deadlines.filter(d => d.date === dateStr && d.showInCal !== false);
 
                 let classes = 'cal-cell';
                 if (dateStr === todayStr) classes += ' today';
                 if (dateStr === selectedCalDate) classes += ' selected';
 
-                const dotsHtml = dayEvents.slice(0, 3).map(e => `<span class="dot dot-${e.owner || 'both'}"></span>`).join('');
+                const evDots = dayEvents.slice(0, 2).map(e => `<span class="dot dot-${e.owner || 'both'}"></span>`).join('');
+                const dlDots = dayDeadlines.slice(0, 2).map(() => `<span class="dot-dl"></span>`).join('');
 
                 html += `
                     <div class="${classes}" onclick="selectCalDate('${dateStr}')">
                         <span>${day}</span>
-                        <div class="cal-dots">${dotsHtml}</div>
+                        <div class="cal-dots">${evDots}${dlDots}</div>
                     </div>
                 `;
             }
@@ -734,7 +1005,7 @@
             const clearBtn = document.getElementById('clearDateBtn');
             if (sectionTitle && clearBtn) {
                 if (selectedCalDate) {
-                    sectionTitle.textContent = `Eventi del ${formatItalianDate(selectedCalDate)}`;
+                    sectionTitle.textContent = `Agenda del ${formatItalianDate(selectedCalDate)}`;
                     clearBtn.style.display = 'inline-block';
                 } else {
                     sectionTitle.textContent = 'Tutti gli Eventi';
@@ -743,106 +1014,143 @@
             }
         }
 
+        // Esportazione .ics per calendario nativo smartphone
+        window.downloadICS = function(title, dateStr) {
+            const cleanDate = dateStr.replace(/-/g, '');
+            const icsContent = [
+                'BEGIN:VCALENDAR',
+                'VERSION:2.0',
+                'BEGIN:VEVENT',
+                `DTSTART;VALUE=DATE:${cleanDate}`,
+                `DTEND;VALUE=DATE:${cleanDate}`,
+                `SUMMARY:${title}`,
+                'END:VEVENT',
+                'END:VCALENDAR'
+            ].join('\r\n');
+
+            const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `${title.replace(/\s+/g, '_')}.ics`;
+            link.click();
+        };
+
         async function logAction(actionText) {
             try {
                 await addDoc(collection(db, `rooms/${currentRoomId}/logs`), {
                     text: `${currentUserName} ${actionText}`,
                     time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
                 });
-            } catch (err) {
-                console.error("Errore log:", err);
-            }
+            } catch (err) { console.error(err); }
         }
 
-        // Funzione Promemoria Real-Time ("Ricorda all'altro")
         window.sendNudge = async function(itemName) {
-            await logAction(`🔔 ha inviato un promemoria urgente per: "${itemName}"`);
-            alert(`Promemoria inviato in tempo reale! L'altra persona lo vedrà subito nel centro notifiche.`);
+            await logAction(`🔔 ha inviato un promemoria per: "${itemName}"`);
+            alert(`Promemoria inviato!`);
         };
 
-        // Modale Quick Add
+        window.toggleLogs = function() {
+            logsCollapsed = !logsCollapsed;
+            document.getElementById('activityLogContainer').style.display = logsCollapsed ? 'none' : 'block';
+        };
+
+        // Quick Add Contestuale
         window.openQuickAdd = function() {
             const saveBtn = document.getElementById('quickSaveBtn');
-            if (saveBtn) {
-                saveBtn.disabled = false;
-                saveBtn.textContent = 'Salva';
-            }
+            saveBtn.disabled = false;
             isSavingQuick = false;
+            document.getElementById('quickTitle').value = '';
 
-            const titleInput = document.getElementById('quickTitle');
-            if (titleInput) titleInput.value = '';
+            // Imposta tipo in base alla scheda attiva
+            const tabToType = {
+                home: 'event',
+                calendar: 'event',
+                tasks: 'task',
+                lists: 'list',
+                deadlines: 'deadline',
+                expenses: 'expense',
+                ideas: 'idea',
+                notes: 'note'
+            };
+            document.getElementById('quickType').value = tabToType[activeTabId] || 'event';
 
             const todayStr = new Date().toISOString().split('T')[0];
-            const qDate = document.getElementById('quickDate');
-            const qDlDate = document.getElementById('quickDlDate');
-            if (qDate) qDate.value = selectedCalDate || todayStr;
-            if (qDlDate) qDlDate.value = todayStr;
+            document.getElementById('quickDate').value = selectedCalDate || todayStr;
+            document.getElementById('quickDlDate').value = selectedCalDate || todayStr;
 
             toggleQuickFields();
-            const modal = document.getElementById('quickAddModal');
-            if (modal) modal.style.display = 'flex';
+            document.getElementById('quickAddModal').style.display = 'flex';
         };
 
         window.closeQuickAdd = function() {
-            const modal = document.getElementById('quickAddModal');
-            if (modal) modal.style.display = 'none';
+            document.getElementById('quickAddModal').style.display = 'none';
         };
 
         window.toggleQuickFields = function() {
             const type = document.getElementById('quickType').value;
-            const eventFields = document.getElementById('quickEventFields');
-            const deadlineFields = document.getElementById('quickDeadlineFields');
-            if (eventFields) eventFields.style.display = (type === 'event') ? 'block' : 'none';
-            if (deadlineFields) deadlineFields.style.display = (type === 'deadline') ? 'block' : 'none';
+            document.querySelectorAll('.type-fields').forEach(el => el.style.display = 'none');
+            if (type === 'event') document.getElementById('quickEventFields').style.display = 'block';
+            if (type === 'deadline') document.getElementById('quickDeadlineFields').style.display = 'block';
+            if (type === 'task') document.getElementById('quickTaskFields').style.display = 'block';
+            if (type === 'expense') document.getElementById('quickExpenseFields').style.display = 'block';
+            if (type === 'idea') document.getElementById('quickIdeaFields').style.display = 'block';
         };
 
         window.saveQuickAdd = async function() {
             if (isSavingQuick) return;
-
             const type = document.getElementById('quickType').value;
-            const titleInput = document.getElementById('quickTitle');
-            if (!titleInput) return;
-            const title = titleInput.value.trim();
-
+            const title = document.getElementById('quickTitle').value.trim();
             if (!title) return alert('Inserisci un titolo');
 
             isSavingQuick = true;
-            const saveBtn = document.getElementById('quickSaveBtn');
-            if (saveBtn) saveBtn.disabled = true;
-            titleInput.value = '';
+            document.getElementById('quickSaveBtn').disabled = true;
             closeQuickAdd();
 
             try {
                 if (type === 'event') {
-                    const date = document.getElementById('quickDate').value;
-                    const category = document.getElementById('quickCategory').value;
-                    const owner = document.getElementById('quickOwner').value;
                     await addDoc(collection(db, `rooms/${currentRoomId}/events`), {
                         title,
-                        date: date || new Date().toISOString().split('T')[0],
-                        category,
-                        owner,
+                        date: document.getElementById('quickDate').value || new Date().toISOString().split('T')[0],
+                        category: document.getElementById('quickCategory').value,
+                        owner: document.getElementById('quickOwner').value,
                         createdBy: currentUserName
                     });
                 } else if (type === 'deadline') {
-                    const date = document.getElementById('quickDlDate').value;
-                    const owner = document.getElementById('quickDlOwner').value;
                     await addDoc(collection(db, `rooms/${currentRoomId}/deadlines`), {
                         title,
-                        date: date || new Date().toISOString().split('T')[0],
-                        owner,
+                        date: document.getElementById('quickDlDate').value || new Date().toISOString().split('T')[0],
+                        owner: document.getElementById('quickDlOwner').value,
+                        recurrence: document.getElementById('quickDlRecurrence').value,
+                        showInCal: document.getElementById('quickDlShowInCal').checked,
                         createdBy: currentUserName
                     });
                 } else if (type === 'task') {
                     await addDoc(collection(db, `rooms/${currentRoomId}/tasks`), {
                         title,
                         completed: false,
+                        recurrence: document.getElementById('quickTaskRecurrence').value,
                         createdBy: currentUserName
                     });
                 } else if (type === 'list') {
                     await addDoc(collection(db, `rooms/${currentRoomId}/lists`), {
                         title,
+                        aisle: detectGroceryAisle(title),
                         completed: false,
+                        createdBy: currentUserName
+                    });
+                } else if (type === 'expense') {
+                    const amount = parseFloat(document.getElementById('quickExpAmount').value) || 0;
+                    await addDoc(collection(db, `rooms/${currentRoomId}/expenses`), {
+                        title,
+                        amount,
+                        paidBy: document.getElementById('quickExpPaidBy').value,
+                        paidByName: currentUserName,
+                        date: new Date().toISOString().split('T')[0]
+                    });
+                } else if (type === 'idea') {
+                    await addDoc(collection(db, `rooms/${currentRoomId}/ideas`), {
+                        title,
+                        tag: document.getElementById('quickIdeaTag').value,
                         createdBy: currentUserName
                     });
                 } else if (type === 'note') {
@@ -854,178 +1162,248 @@
                     });
                 }
 
-                await logAction(`ha aggiunto rapidamente "${title}"`);
+                await logAction(`ha aggiunto "${title}"`);
             } catch (err) {
-                console.error("Errore salvataggio:", err);
-                alert("Errore durante il salvataggio su Firebase. Controlla la connessione o le chiavi API.");
+                console.error(err);
+                alert("Errore durante il salvataggio.");
             } finally {
                 isSavingQuick = false;
-                if (saveBtn) saveBtn.disabled = false;
             }
         };
 
-        // Funzioni CRUD Form Interni
+        // CRUD & Automazioni
         window.addTask = async function() {
-            const titleInput = document.getElementById('taskTitle');
-            if (!titleInput) return;
-            const title = titleInput.value.trim();
-            if(!title) return;
-            titleInput.value = '';
-            await addDoc(collection(db, `rooms/${currentRoomId}/tasks`), { title, completed: false, createdBy: currentUserName });
+            const title = document.getElementById('taskTitle').value.trim();
+            const recurrence = document.getElementById('taskRecurrence').value;
+            if (!title) return;
+            document.getElementById('taskTitle').value = '';
+            await addDoc(collection(db, `rooms/${currentRoomId}/tasks`), { title, completed: false, recurrence, createdBy: currentUserName });
             await logAction(`ha aggiunto la task "${title}"`);
         };
 
-        window.addListItem = async function() {
-            const titleInput = document.getElementById('listItemTitle');
-            if (!titleInput) return;
-            const title = titleInput.value.trim();
-            if(!title) return;
-            titleInput.value = '';
-            await addDoc(collection(db, `rooms/${currentRoomId}/lists`), { title, completed: false, createdBy: currentUserName });
-        };
-
-        window.addDeadline = async function() {
-            const titleInput = document.getElementById('dlTitle');
-            const dateInput = document.getElementById('dlDate');
-            const ownerInput = document.getElementById('dlOwner');
-            if (!titleInput || !dateInput || !ownerInput) return;
-            const title = titleInput.value.trim();
-            const date = dateInput.value;
-            const owner = ownerInput.value;
-            if(!title || !date) return alert('Compila tutti i campi');
-            titleInput.value = '';
-            dateInput.value = '';
-            await addDoc(collection(db, `rooms/${currentRoomId}/deadlines`), { title, date, owner, createdBy: currentUserName });
-            await logAction(`ha aggiunto la scadenza "${title}"`);
-        };
-
-        window.addNote = async function() {
-            const titleInput = document.getElementById('noteTitle');
-            const contentInput = document.getElementById('noteContent');
-            const privateInput = document.getElementById('notePrivate');
-            if (!titleInput || !contentInput || !privateInput) return;
-            const title = titleInput.value.trim();
-            const content = contentInput.value;
-            const isPrivate = privateInput.value === 'true';
-            if(!title) return;
-            titleInput.value = '';
-            contentInput.value = '';
-            await addDoc(collection(db, `rooms/${currentRoomId}/notes`), { title, content, isPrivate, author: currentUserName });
-            await logAction(`ha creato una nota "${title}"`);
-        };
-
-        window.deleteEvent = async (id, title) => {
-            await deleteDoc(doc(db, `rooms/${currentRoomId}/events`, id));
-            await logAction(`ha eliminato l'evento "${title}"`);
-        };
-
-        window.toggleTask = async (id, status, title) => {
-            await updateDoc(doc(db, `rooms/${currentRoomId}/tasks`, id), { completed: !status });
-            await logAction(`ha aggiornato la task "${title}"`);
+        window.toggleTask = async (id, status, title, recurrence) => {
+            const nextStatus = !status;
+            await updateDoc(doc(db, `rooms/${currentRoomId}/tasks`, id), { completed: nextStatus });
+            // Automazione: se completata e ricorrente, crea la prossima
+            if (nextStatus && recurrence && recurrence !== 'none') {
+                await addDoc(collection(db, `rooms/${currentRoomId}/tasks`), {
+                    title,
+                    completed: false,
+                    recurrence,
+                    createdBy: currentUserName
+                });
+                await logAction(`🔄 ha completato e rinnovato automaticamente la task "${title}"`);
+            } else {
+                await logAction(`ha aggiornato la task "${title}"`);
+            }
         };
         window.deleteTask = async (id) => await deleteDoc(doc(db, `rooms/${currentRoomId}/tasks`, id));
 
+        // Spesa Intelligente
+        window.addListItem = async function() {
+            const title = document.getElementById('listItemTitle').value.trim();
+            if (!title) return;
+            document.getElementById('listItemTitle').value = '';
+            await addDoc(collection(db, `rooms/${currentRoomId}/lists`), {
+                title,
+                aisle: detectGroceryAisle(title),
+                completed: false,
+                createdBy: currentUserName
+            });
+        };
         window.toggleListItem = async (id, status) => await updateDoc(doc(db, `rooms/${currentRoomId}/lists`, id), { completed: !status });
         window.deleteListItem = async (id) => await deleteDoc(doc(db, `rooms/${currentRoomId}/lists`, id));
+        window.clearCompletedGrocery = async function() {
+            const completedItems = lists.filter(l => l.completed);
+            for (const item of completedItems) {
+                await deleteDoc(doc(db, `rooms/${currentRoomId}/lists`, item.id));
+            }
+        };
 
+        // Scadenze + Auto-Rinnovo
+        window.addDeadline = async function() {
+            const title = document.getElementById('dlTitle').value.trim();
+            const date = document.getElementById('dlDate').value;
+            const owner = document.getElementById('dlOwner').value;
+            const recurrence = document.getElementById('dlRecurrence').value;
+            const showInCal = document.getElementById('dlShowInCal').checked;
+            if (!title || !date) return alert('Compila tutti i campi');
+            document.getElementById('dlTitle').value = '';
+            document.getElementById('dlDate').value = '';
+            await addDoc(collection(db, `rooms/${currentRoomId}/deadlines`), { title, date, owner, recurrence, showInCal, createdBy: currentUserName });
+            await logAction(`ha aggiunto la scadenza "${title}"`);
+        };
+
+        window.completeDeadline = async function(id, title, date, owner, recurrence, showInCal) {
+            await deleteDoc(doc(db, `rooms/${currentRoomId}/deadlines`, id));
+            if (recurrence && recurrence !== 'none') {
+                const nextDate = getNextDate(date, recurrence);
+                await addDoc(collection(db, `rooms/${currentRoomId}/deadlines`), {
+                    title,
+                    date: nextDate,
+                    owner,
+                    recurrence,
+                    showInCal: showInCal !== false,
+                    createdBy: currentUserName
+                });
+                await logAction(`🔄 ha saldato "${title}" (prossima: ${formatItalianDate(nextDate)})`);
+            } else {
+                await logAction(`✅ ha completato la scadenza "${title}"`);
+            }
+        };
         window.deleteDeadline = async (id, title) => {
             await deleteDoc(doc(db, `rooms/${currentRoomId}/deadlines`, id));
             await logAction(`ha eliminato la scadenza "${title}"`);
         };
 
+        // Spese Condivise (Split)
+        window.addExpense = async function() {
+            const title = document.getElementById('expTitle').value.trim();
+            const amount = parseFloat(document.getElementById('expAmount').value);
+            const paidBy = document.getElementById('expPaidBy').value;
+            if (!title || isNaN(amount) || amount <= 0) return alert('Inserisci descrizione e importo valido');
+            document.getElementById('expTitle').value = '';
+            document.getElementById('expAmount').value = '';
+            await addDoc(collection(db, `rooms/${currentRoomId}/expenses`), {
+                title,
+                amount,
+                paidBy,
+                paidByName: currentUserName,
+                date: new Date().toISOString().split('T')[0]
+            });
+            await logAction(`💶 ha registrato una spesa di ${amount.toFixed(2)}€ (${title})`);
+        };
+        window.deleteExpense = async (id) => await deleteDoc(doc(db, `rooms/${currentRoomId}/expenses`, id));
+        window.settleUpExpenses = async function() {
+            if (!confirm("Azzerare tutte le spese registrate e tornare in pari?")) return;
+            for (const exp of expenses) {
+                await deleteDoc(doc(db, `rooms/${currentRoomId}/expenses`, exp.id));
+            }
+            await logAction(`🤝 ha azzerato i conti (Siete in pari!)`);
+        };
+
+        // Wishlist & Idee
+        window.addIdea = async function() {
+            const title = document.getElementById('ideaTitle').value.trim();
+            const tag = document.getElementById('ideaTag').value;
+            if (!title) return;
+            document.getElementById('ideaTitle').value = '';
+            await addDoc(collection(db, `rooms/${currentRoomId}/ideas`), { title, tag, createdBy: currentUserName });
+            await logAction(`💡 ha aggiunto un'idea: "${title}"`);
+        };
+        window.deleteIdea = async (id) => await deleteDoc(doc(db, `rooms/${currentRoomId}/ideas`, id));
+        window.pickRandomIdea = function() {
+            if (!ideas.length) {
+                document.getElementById('randomIdeaResult').textContent = "Aggiungete prima qualche idea alla lista!";
+                return;
+            }
+            const random = ideas[Math.floor(Math.random() * ideas.length)];
+            document.getElementById('randomIdeaResult').innerHTML = `🎉 Scelta estratta: <strong>${random.tag} - ${random.title}</strong>`;
+        };
+        window.promoteIdeaToEvent = async function(id, title) {
+            const todayStr = new Date().toISOString().split('T')[0];
+            await addDoc(collection(db, `rooms/${currentRoomId}/events`), {
+                title,
+                date: todayStr,
+                category: '❤️ Coppia',
+                owner: 'both',
+                createdBy: currentUserName
+            });
+            await deleteDoc(doc(db, `rooms/${currentRoomId}/ideas`, id));
+            await logAction(`📅 ha trasformato l'idea "${title}" in un evento per oggi!`);
+            alert(`"${title}" aggiunto al Calendario di oggi!`);
+        };
+
+        // Note & Eventi Delete
+        window.addNote = async function() {
+            const title = document.getElementById('noteTitle').value.trim();
+            const content = document.getElementById('noteContent').value;
+            const isPrivate = document.getElementById('notePrivate').value === 'true';
+            if (!title) return;
+            document.getElementById('noteTitle').value = '';
+            document.getElementById('noteContent').value = '';
+            await addDoc(collection(db, `rooms/${currentRoomId}/notes`), { title, content, isPrivate, author: currentUserName });
+            await logAction(`ha creato una nota "${title}"`);
+        };
         window.deleteNote = async (id, title) => {
             await deleteDoc(doc(db, `rooms/${currentRoomId}/notes`, id));
             await logAction(`ha eliminato la nota "${title}"`);
         };
+        window.deleteEvent = async (id, title) => {
+            await deleteDoc(doc(db, `rooms/${currentRoomId}/events`, id));
+            await logAction(`ha eliminato l'evento "${title}"`);
+        };
 
         window.switchTab = function(tabId, btn) {
+            activeTabId = tabId;
             document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-            const targetSection = document.getElementById(tabId);
-            if (targetSection) targetSection.classList.add('active');
-            
+            document.getElementById(tabId).classList.add('active');
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
             if (btn) btn.classList.add('active');
-            
             if (tabId === 'calendar') renderVisualCalendar();
         };
 
         function renderAll() {
             const todayStr = new Date().toISOString().split('T')[0];
-            const searchInput = document.getElementById('globalSearch');
-            const searchQuery = searchInput ? searchInput.value.toLowerCase() : '';
+            const searchQuery = document.getElementById('globalSearch').value.toLowerCase();
             
             renderVisualCalendar();
 
+            // Stato giornata Home
             const todayEvents = events.filter(e => e.date === todayStr);
+            const todayDeadlines = deadlines.filter(d => d.date === todayStr);
             const isFreeTogether = !todayEvents.some(e => e.owner === 'mine' || e.owner === 'theirs');
-            
-            const freeTimeEl = document.getElementById('freeTimeSuggestion');
-            if (freeTimeEl) {
-                freeTimeEl.textContent = isFreeTogether 
-                    ? 'Nessun impegno individuale registrato per oggi: siete entrambi liberi!' 
-                    : 'Ci sono impegni individuali programmati per oggi. Verificare la sezione Calendario.';
-            }
+            document.getElementById('freeTimeSuggestion').textContent = isFreeTogether 
+                ? `Nessun impegno individuale oggi${todayDeadlines.length ? `, ma hai ${todayDeadlines.length} scadenza/e oggi` : ': siete entrambi liberi!'}` 
+                : `Ci sono ${todayEvents.length} eventi programmati per oggi.`;
 
-            // Home Today Events
-            const todayList = document.getElementById('todayList');
-            if (todayList) {
-                todayList.innerHTML = todayEvents.length ? todayEvents.map(e => `
-                    <div class="card">
-                        <div class="action-btns">
-                            <button class="btn-icon" onclick="sendNudge('${e.title}')" title="Ricorda all'altro">🔔</button>
-                        </div>
-                        <div class="card-title">${e.category || ''} ${e.title}</div>
-                        <span class="badge badge-${e.owner || 'both'}">${e.owner || 'both'}</span>
+            // Home Today
+            document.getElementById('todayList').innerHTML = todayEvents.length ? todayEvents.map(e => `
+                <div class="card">
+                    <div class="action-btns">
+                        <button class="btn-icon" onclick="sendNudge('${e.title}')">🔔</button>
                     </div>
-                `).join('') : '<div class="card card-sub">Nessun evento per oggi.</div>';
-            }
+                    <div class="card-title">${e.category || ''} ${e.title}</div>
+                    <span class="badge badge-${e.owner || 'both'}">${e.owner || 'both'}</span>
+                </div>
+            `).join('') : '<div class="card card-sub">Nessun evento per oggi.</div>';
 
             // Home Tasks
-            const todoListHome = document.getElementById('todoListHome');
             const openTasks = tasks.filter(t => !t.completed);
-            if (todoListHome) {
-                todoListHome.innerHTML = openTasks.length ? openTasks.map(t => `
-                    <div class="card" style="display:flex; justify-content:space-between; align-items:center;">
-                        <span>${t.title}</span>
-                        <div>
-                            <button class="btn-icon" onclick="sendNudge('${t.title}')" title="Ricorda all'altro" style="margin-right:8px;">🔔</button>
-                            <input type="checkbox" onchange="toggleTask('${t.id}', ${t.completed}, '${t.title}')" ${t.completed ? 'checked' : ''}>
-                        </div>
+            document.getElementById('todoListHome').innerHTML = openTasks.length ? openTasks.map(t => `
+                <div class="card" style="display:flex; justify-content:space-between; align-items:center;">
+                    <span>${t.title} ${t.recurrence && t.recurrence !== 'none' ? '🔄' : ''}</span>
+                    <div style="display:flex; align-items:center; gap:8px;">
+                        <button class="btn-icon" onclick="sendNudge('${t.title}')">🔔</button>
+                        <input type="checkbox" onchange="toggleTask('${t.id}', ${t.completed}, '${t.title}', '${t.recurrence || 'none'}')" ${t.completed ? 'checked' : ''}>
                     </div>
-                `).join('') : '<div class="card card-sub">Tutte le attività completate! 🎉</div>';
-            }
+                </div>
+            `).join('') : '<div class="card card-sub">Tutte le attività completate! 🎉</div>';
 
             // Home Deadlines
-            const deadlinesHome = document.getElementById('deadlinesHome');
-            if (deadlinesHome) {
-                deadlinesHome.innerHTML = deadlines.length ? deadlines.map(d => {
-                    const diffDays = Math.ceil((new Date(d.date) - new Date(todayStr)) / (1000 * 60 * 60 * 24));
-                    return `
-                        <div class="card">
-                            <div class="action-btns">
-                                <button class="btn-icon" onclick="sendNudge('${d.title}')" title="Ricorda scadenza">🔔</button>
-                            </div>
-                            <div class="card-title">${d.title}</div>
-                            <div class="card-sub">Scadenza: ${formatItalianDate(d.date)} (${diffDays >= 0 ? 'Tra ' + diffDays + ' giorni' : 'Scaduto'})</div>
-                            <span class="badge badge-${d.owner || 'both'}">${d.owner || 'both'}</span>
+            document.getElementById('deadlinesHome').innerHTML = deadlines.length ? deadlines.slice(0, 3).map(d => {
+                const diffDays = Math.ceil((new Date(d.date) - new Date(todayStr)) / (1000 * 60 * 60 * 24));
+                return `
+                    <div class="card">
+                        <div class="action-btns">
+                            <button class="btn-icon" onclick="sendNudge('${d.title}')">🔔</button>
                         </div>
-                    `;
-                }).join('') : '<div class="card card-sub">Nessuna scadenza imminente.</div>';
-            }
+                        <div class="card-title">${d.title} ${d.recurrence && d.recurrence !== 'none' ? '🔄' : ''}</div>
+                        <div class="card-sub">Scadenza: ${formatItalianDate(d.date)} (${diffDays >= 0 ? 'Tra ' + diffDays + ' giorni' : 'Scaduto'})</div>
+                        <span class="badge badge-${d.owner || 'both'}">${d.owner || 'both'}</span>
+                    </div>
+                `;
+            }).join('') : '<div class="card card-sub">Nessuna scadenza imminente.</div>';
 
             // Activity Log
-            const logContainer = document.getElementById('activityLogContainer');
-            if (logContainer) {
-                logContainer.innerHTML = activityLogs.length ? activityLogs.slice(-5).reverse().map(l => `
-                    <div class="card" style="padding: 10px; font-size: 12px; color: var(--text);">
-                        <span>${l.text} <span style="color:var(--gray); float:right;">${l.time}</span></span>
-                    </div>
-                `).join('') : '<div class="card card-sub">Nessuna notifica recente.</div>';
-            }
+            document.getElementById('activityLogContainer').innerHTML = activityLogs.length ? activityLogs.slice(-4).reverse().map(l => `
+                <div class="card" style="padding: 10px; font-size: 12px;">
+                    <span>${l.text} <span style="color:var(--gray); float:right;">${l.time}</span></span>
+                </div>
+            `).join('') : '<div class="card card-sub">Nessuna notifica recente.</div>';
 
-            // Calendar View
-            const eventFilterEl = document.getElementById('eventFilter');
-            const filterValue = eventFilterEl ? eventFilterEl.value : 'all';
+            // Calendar View (Eventi + eventuali Scadenze del giorno)
+            const filterValue = document.getElementById('eventFilter').value;
             let filteredEvents = events.filter(e => {
                 if (selectedCalDate && e.date !== selectedCalDate) return false;
                 if (filterValue !== 'all' && e.owner !== filterValue) return false;
@@ -1033,79 +1411,152 @@
                 return true;
             });
             filteredEvents.sort((a, b) => new Date(a.date) - new Date(b.date));
-            
-            const eventsContainer = document.getElementById('eventsContainer');
-            if (eventsContainer) {
-                eventsContainer.innerHTML = filteredEvents.length ? filteredEvents.map(e => `
-                    <div class="card">
-                        <button class="delete-btn" onclick="deleteEvent('${e.id}', '${e.title}')">Elimina</button>
-                        <button class="btn-icon" onclick="sendNudge('${e.title}')" title="Ricorda all'altro" style="float:right; margin-right:10px;">🔔</button>
-                        <div class="card-title">${e.category || ''} ${e.title}</div>
-                        <div class="card-sub">Data: ${formatItalianDate(e.date)} • Inserito da: ${e.createdBy}</div>
-                        <span class="badge badge-${e.owner || 'both'}">${e.owner || 'both'}</span>
+
+            let calDeadlinesHtml = '';
+            if (selectedCalDate) {
+                const dayDls = deadlines.filter(d => d.date === selectedCalDate && d.showInCal !== false);
+                calDeadlinesHtml = dayDls.map(d => `
+                    <div class="card" style="border-left: 4px solid var(--warning);">
+                        <div class="card-title">⏳ Scadenza: ${d.title}</div>
+                        <div class="card-sub">Data: ${formatItalianDate(d.date)}</div>
+                        <span class="badge badge-${d.owner || 'both'}">${d.owner || 'both'}</span>
                     </div>
-                `).join('') : `<div class="card card-sub">${selectedCalDate ? 'Nessun evento in programma per questo giorno.' : 'Nessun evento trovato.'}</div>`;
+                `).join('');
             }
+
+            const eventsHtml = filteredEvents.map(e => `
+                <div class="card">
+                    <div class="action-btns">
+                        <button class="btn-icon" onclick="downloadICS('${e.title}', '${e.date}')" title="Esporta sul telefono">📅</button>
+                        <button class="btn-icon" onclick="sendNudge('${e.title}')" title="Ricorda">🔔</button>
+                        <button class="delete-btn" onclick="deleteEvent('${e.id}', '${e.title}')">Elimina</button>
+                    </div>
+                    <div class="card-title">${e.category || ''} ${e.title}</div>
+                    <div class="card-sub">Data: ${formatItalianDate(e.date)} • Da: ${e.createdBy}</div>
+                    <span class="badge badge-${e.owner || 'both'}">${e.owner || 'both'}</span>
+                </div>
+            `).join('');
+
+            document.getElementById('eventsContainer').innerHTML = (calDeadlinesHtml + eventsHtml) || `<div class="card card-sub">${selectedCalDate ? 'Nessun impegno per questo giorno.' : 'Nessun evento trovato.'}</div>`;
 
             // Tasks View
-            const tasksContainer = document.getElementById('tasksContainer');
-            if (tasksContainer) {
-                tasksContainer.innerHTML = tasks.filter(t => !searchQuery || t.title.toLowerCase().includes(searchQuery)).map(t => `
-                    <div class="card" style="display:flex; justify-content:space-between; align-items:center;">
+            document.getElementById('tasksContainer').innerHTML = tasks.filter(t => !searchQuery || t.title.toLowerCase().includes(searchQuery)).map(t => `
+                <div class="card" style="display:flex; justify-content:space-between; align-items:center;">
+                    <div>
                         <span style="${t.completed ? 'text-decoration: line-through; color: var(--gray);' : ''}">${t.title}</span>
-                        <div>
-                            <button class="btn-icon" onclick="sendNudge('${t.title}')" title="Ricorda task" style="margin-right:8px;">🔔</button>
-                            <input type="checkbox" onchange="toggleTask('${t.id}', ${t.completed}, '${t.title}')" ${t.completed ? 'checked' : ''} style="margin-right: 10px;">
-                            <button onclick="deleteTask('${t.id}')" style="background:none; border:none; color:var(--danger); cursor:pointer;">🗑️</button>
-                        </div>
+                        ${t.recurrence && t.recurrence !== 'none' ? `<span class="badge badge-recur">🔄 ${t.recurrence}</span>` : ''}
                     </div>
-                `).join('') || '<div class="card card-sub">Nessuna attività inserita.</div>';
-            }
+                    <div style="display:flex; align-items:center; gap:8px;">
+                        <button class="btn-icon" onclick="sendNudge('${t.title}')">🔔</button>
+                        <input type="checkbox" onchange="toggleTask('${t.id}', ${t.completed}, '${t.title}', '${t.recurrence || 'none'}')" ${t.completed ? 'checked' : ''}>
+                        <button onclick="deleteTask('${t.id}')" style="background:none; border:none; color:var(--danger); cursor:pointer;">🗑️</button>
+                    </div>
+                </div>
+            `).join('') || '<div class="card card-sub">Nessuna attività inserita.</div>';
 
-            // Lists View (Spesa)
-            const listsContainer = document.getElementById('listsContainer');
-            if (listsContainer) {
-                listsContainer.innerHTML = lists.filter(l => !searchQuery || l.title.toLowerCase().includes(searchQuery)).map(l => `
-                    <div class="card" style="display:flex; justify-content:space-between; align-items:center;">
-                        <span style="${l.completed ? 'text-decoration: line-through; color: var(--gray);' : ''}">${l.title}</span>
-                        <div>
-                            <button class="btn-icon" onclick="sendNudge('${l.title}')" title="Ricorda elemento" style="margin-right:8px;">🔔</button>
-                            <input type="checkbox" onchange="toggleListItem('${l.id}', ${l.completed})" ${l.completed ? 'checked' : ''} style="margin-right: 10px;">
-                            <button onclick="deleteListItem('${l.id}')" style="background:none; border:none; color:var(--danger); cursor:pointer;">🗑️</button>
+            // Spesa Raggruppata per Reparto
+            const filteredLists = lists.filter(l => !searchQuery || l.title.toLowerCase().includes(searchQuery));
+            if (filteredLists.length) {
+                const grouped = {};
+                filteredLists.forEach(item => {
+                    const aisle = item.aisle || detectGroceryAisle(item.title);
+                    if (!grouped[aisle]) grouped[aisle] = [];
+                    grouped[aisle].push(item);
+                });
+                document.getElementById('listsContainer').innerHTML = Object.keys(grouped).sort().map(aisle => `
+                    <div class="aisle-header">${aisle}</div>
+                    ${grouped[aisle].map(l => `
+                        <div class="card" style="display:flex; justify-content:space-between; align-items:center; padding: 12px;">
+                            <span style="${l.completed ? 'text-decoration: line-through; color: var(--gray);' : ''}">${l.title}</span>
+                            <div style="display:flex; align-items:center; gap:8px;">
+                                <input type="checkbox" onchange="toggleListItem('${l.id}', ${l.completed})" ${l.completed ? 'checked' : ''}>
+                                <button onclick="deleteListItem('${l.id}')" style="background:none; border:none; color:var(--danger); cursor:pointer;">🗑️</button>
+                            </div>
                         </div>
-                    </div>
-                `).join('') || '<div class="card card-sub">Lista della spesa vuota.</div>';
+                    `).join('')}
+                `).join('');
+            } else {
+                document.getElementById('listsContainer').innerHTML = '<div class="card card-sub">Lista della spesa vuota.</div>';
             }
 
             // Deadlines View
-            const deadlinesContainer = document.getElementById('deadlinesContainer');
-            if (deadlinesContainer) {
-                deadlinesContainer.innerHTML = deadlines.filter(d => !searchQuery || d.title.toLowerCase().includes(searchQuery)).map(d => `
-                    <div class="card">
+            const sortedDeadlines = [...deadlines].filter(d => !searchQuery || d.title.toLowerCase().includes(searchQuery)).sort((a,b) => new Date(a.date) - new Date(b.date));
+            document.getElementById('deadlinesContainer').innerHTML = sortedDeadlines.map(d => `
+                <div class="card">
+                    <div class="action-btns">
+                        <button class="btn-small" onclick="completeDeadline('${d.id}', '${d.title}', '${d.date}', '${d.owner || 'both'}', '${d.recurrence || 'none'}', ${d.showInCal !== false})">✓ Fatto</button>
                         <button class="delete-btn" onclick="deleteDeadline('${d.id}', '${d.title}')">Elimina</button>
-                        <button class="btn-icon" onclick="sendNudge('${d.title}')" title="Ricorda scadenza" style="float:right; margin-right:10px;">🔔</button>
-                        <div class="card-title">${d.title}</div>
-                        <div class="card-sub">Data scadenza: ${formatItalianDate(d.date)}</div>
-                        <span class="badge badge-${d.owner || 'both'}">${d.owner || 'both'}</span>
                     </div>
-                `).join('') || '<div class="card card-sub">Nessuna scadenza inserita.</div>';
+                    <div class="card-title">${d.title}</div>
+                    <div class="card-sub">Scadenza: ${formatItalianDate(d.date)}</div>
+                    <span class="badge badge-${d.owner || 'both'}">${d.owner || 'both'}</span>
+                    ${d.recurrence && d.recurrence !== 'none' ? `<span class="badge badge-recur">🔄 ${d.recurrence}</span>` : ''}
+                </div>
+            `).join('') || '<div class="card card-sub">Nessuna scadenza inserita.</div>';
+
+            // Expenses View (Split Tracker)
+            let myPaid = 0;
+            let theirPaid = 0;
+            expenses.forEach(ex => {
+                // Considera "mine" se pagato dall'utente corrente, altrimenti "theirs"
+                const isMine = (ex.paidByName === currentUserName && ex.paidBy === 'mine') || (ex.paidByName !== currentUserName && ex.paidBy === 'theirs');
+                if (isMine) myPaid += Number(ex.amount || 0);
+                else theirPaid += Number(ex.amount || 0);
+            });
+            const diff = (myPaid - theirPaid) / 2;
+            const balanceEl = document.getElementById('balanceSummaryText');
+            if (Math.abs(diff) < 0.01) {
+                balanceEl.innerHTML = `Siete perfettamente in pari! 🤝`;
+            } else if (diff > 0) {
+                balanceEl.innerHTML = `Sei in credito di <strong>${diff.toFixed(2)} €</strong> <button onclick="settleUpExpenses()" style="float:right; background:rgba(255,255,255,0.2); border:none; color:white; padding:4px 8px; border-radius:6px; font-size:11px; cursor:pointer;">Salda</button>`;
+            } else {
+                balanceEl.innerHTML = `Devi dare <strong>${Math.abs(diff).toFixed(2)} €</strong> <button onclick="settleUpExpenses()" style="float:right; background:rgba(255,255,255,0.2); border:none; color:white; padding:4px 8px; border-radius:6px; font-size:11px; cursor:pointer;">Salda</button>`;
             }
 
-            // Notes View
-            const notesContainer = document.getElementById('notesContainer');
-            if (notesContainer) {
-                notesContainer.innerHTML = notes
-                    .filter(n => (!n.isPrivate || n.author === currentUserName) && (!searchQuery || n.title.toLowerCase().includes(searchQuery) || n.content.toLowerCase().includes(searchQuery)))
-                    .map(n => `
-                        <div class="card">
-                            <button class="delete-btn" onclick="deleteNote('${n.id}', '${n.title}')">Elimina</button>
-                            <button class="btn-icon" onclick="sendNudge('${n.title}')" title="Ricorda nota" style="float:right; margin-right:10px;">🔔</button>
-                            <div class="card-title">${n.title} ${n.isPrivate ? '🔒' : '🤝'}</div>
-                            <p style="font-size: 13px; margin-top: 4px;">${n.content}</p>
-                            <div class="card-sub" style="margin-top: 8px;">Autore: ${n.author}</div>
+            document.getElementById('expensesContainer').innerHTML = expenses.filter(ex => !searchQuery || ex.title.toLowerCase().includes(searchQuery)).map(ex => {
+                const isMine = (ex.paidByName === currentUserName && ex.paidBy === 'mine') || (ex.paidByName !== currentUserName && ex.paidBy === 'theirs');
+                return `
+                    <div class="card" style="display:flex; justify-content:space-between; align-items:center;">
+                        <div>
+                            <div class="card-title">${ex.title}</div>
+                            <div class="card-sub">Pagato da: ${isMine ? 'Te' : 'Partner'} • ${formatItalianDate(ex.date)}</div>
                         </div>
-                    `).join('') || '<div class="card card-sub">Nessuna nota presente.</div>';
-            }
+                        <div style="display:flex; align-items:center; gap:10px;">
+                            <strong style="color: var(--primary);">${Number(ex.amount).toFixed(2)} €</strong>
+                            <button onclick="deleteExpense('${ex.id}')" style="background:none; border:none; color:var(--danger); cursor:pointer;">🗑️</button>
+                        </div>
+                    </div>
+                `;
+            }).join('') || '<div class="card card-sub">Nessuna spesa registrata.</div>';
+
+            // Ideas View
+            document.getElementById('ideasContainer').innerHTML = ideas.filter(i => !searchQuery || i.title.toLowerCase().includes(searchQuery)).map(i => `
+                <div class="card" style="display:flex; justify-content:space-between; align-items:center;">
+                    <div>
+                        <div class="card-title">${i.title}</div>
+                        <span class="badge badge-both">${i.tag}</span>
+                    </div>
+                    <div style="display:flex; align-items:center; gap:8px;">
+                        <button class="btn-small" onclick="promoteIdeaToEvent('${i.id}', '${i.title}')" title="Metti in calendario oggi">📅 Fissa oggi</button>
+                        <button onclick="deleteIdea('${i.id}')" style="background:none; border:none; color:var(--danger); cursor:pointer;">🗑️</button>
+                    </div>
+                </div>
+            `).join('') || '<div class="card card-sub">Nessuna idea salvata.</div>';
+
+            // Notes View
+            document.getElementById('notesContainer').innerHTML = notes
+                .filter(n => (!n.isPrivate || n.author === currentUserName) && (!searchQuery || n.title.toLowerCase().includes(searchQuery) || n.content.toLowerCase().includes(searchQuery)))
+                .map(n => `
+                    <div class="card">
+                        <div class="action-btns">
+                            <button class="btn-icon" onclick="sendNudge('${n.title}')">🔔</button>
+                            <button class="delete-btn" onclick="deleteNote('${n.id}', '${n.title}')">Elimina</button>
+                        </div>
+                        <div class="card-title">${n.title} ${n.isPrivate ? '🔒' : '🤝'}</div>
+                        <p style="font-size: 13px; margin-top: 4px;">${n.content}</p>
+                        <div class="card-sub" style="margin-top: 8px;">Autore: ${n.author}</div>
+                    </div>
+                `).join('') || '<div class="card card-sub">Nessuna nota presente.</div>';
         }
 
         if (currentRoomId && currentUserName) {
