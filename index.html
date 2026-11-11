@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>❤️ OurSync v4.1 - Smart Planner di Coppia</title>
+    <title>❤️ OurSync v4.2 - Smart Planner di Coppia</title>
     
     <meta name="theme-color" content="#FF6B6B">
     <meta name="mobile-web-app-capable" content="yes">
@@ -358,7 +358,7 @@
 
     <!-- SCHERMATA ACCESSO STANZA -->
     <div id="roomScreen">
-        <h1 style="text-align: center; color: var(--primary); margin-bottom: 8px;">❤️ OurSync v4.1</h1>
+        <h1 style="text-align: center; color: var(--primary); margin-bottom: 8px;">❤️ OurSync v4.2</h1>
         <p style="text-align: center; color: var(--gray); font-size: 13px; margin-bottom: 24px;">Smart Planner & Automazioni di Coppia</p>
         
         <div class="form-group">
@@ -460,36 +460,12 @@
 
             <!-- SEZIONE ATTIVITÀ (TASK) -->
             <section id="tasks" class="section">
-                <h2>Nuova Task</h2>
-                <div class="card">
-                    <div class="form-group">
-                        <label>Cosa fare?</label>
-                        <input type="text" id="taskTitle" placeholder="Es. Pulire filtro lavatrice">
-                    </div>
-                    <div class="form-group">
-                        <label>Ricorrenza Automatica</label>
-                        <select id="taskRecurrence">
-                            <option value="none">Nessuna (Una volta sola)</option>
-                            <option value="weekly">Ogni settimana</option>
-                            <option value="monthly">Ogni mese</option>
-                        </select>
-                    </div>
-                    <button class="primary-btn" onclick="addTask()">Aggiungi Task</button>
-                </div>
                 <h2>Lista Attività</h2>
                 <div id="tasksContainer"></div>
             </section>
 
             <!-- SEZIONE SPESA INTELLIGENTE -->
             <section id="lists" class="section">
-                <h2>Aggiungi alla Spesa</h2>
-                <div class="card">
-                    <div class="form-group">
-                        <label>Articolo (Riconoscimento reparto automatico)</label>
-                        <input type="text" id="listItemTitle" placeholder="Es. Latte, Mele, Pasta...">
-                    </div>
-                    <button class="primary-btn" onclick="addListItem()">Aggiungi Articolo</button>
-                </div>
                 <h2>
                     <span>Lista della Spesa</span>
                     <button class="btn-small" onclick="clearCompletedGrocery()">🧹 Svuota presi</button>
@@ -499,40 +475,6 @@
 
             <!-- SEZIONE SCADENZE -->
             <section id="deadlines" class="section">
-                <h2>Nuova Scadenza</h2>
-                <div class="card">
-                    <div class="form-group">
-                        <label>Nome Scadenza</label>
-                        <input type="text" id="dlTitle" placeholder="Es. Affitto / Bolletta Luce">
-                    </div>
-                    <div class="form-group">
-                        <label>Data di Scadenza</label>
-                        <input type="date" id="dlDate">
-                    </div>
-                    <div class="form-group">
-                        <label>Assegnazione</label>
-                        <select id="dlOwner">
-                            <option value="both">Entrambi (In comune)</option>
-                            <option value="mine">Mio</option>
-                            <option value="theirs">Dell'altra persona</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Ricorrenza</label>
-                        <select id="dlRecurrence">
-                            <option value="none">Nessuna</option>
-                            <option value="monthly">Ogni mese (Auto-rinnovo)</option>
-                            <option value="yearly">Ogni anno</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label class="checkbox-row">
-                            <input type="checkbox" id="dlShowInCal" checked>
-                            <span>Mostra anche nel Calendario Visivo</span>
-                        </label>
-                    </div>
-                    <button class="primary-btn" onclick="addDeadline()">Aggiungi Scadenza</button>
-                </div>
                 <h2>Tutte le Scadenze</h2>
                 <div id="deadlinesContainer"></div>
             </section>
@@ -542,26 +484,6 @@
                 <div class="balance-box">
                     <div style="font-size: 12px; opacity: 0.9;">Bilancio di Coppia</div>
                     <div id="balanceSummaryText" style="font-size: 18px; font-weight: 700; margin-top: 4px;">Siete in pari! 🤝</div>
-                </div>
-
-                <h2>Registra Spesa</h2>
-                <div class="card">
-                    <div class="form-group">
-                        <label>Descrizione</label>
-                        <input type="text" id="expTitle" placeholder="Es. Cena pizzeria">
-                    </div>
-                    <div class="form-group">
-                        <label>Importo (€)</label>
-                        <input type="number" step="0.01" id="expAmount" placeholder="Es. 45.50">
-                    </div>
-                    <div class="form-group">
-                        <label>Chi ha pagato?</label>
-                        <select id="expPaidBy">
-                            <option value="mine">Io</option>
-                            <option value="theirs">L'altra persona</option>
-                        </select>
-                    </div>
-                    <button class="primary-btn" onclick="addExpense()">Salva Spesa</button>
                 </div>
                 <h2>Storico Spese</h2>
                 <div id="expensesContainer"></div>
@@ -574,49 +496,12 @@
                     <p id="randomIdeaResult" style="font-size: 13px; margin: 6px 0;">Estrai un'idea a sorte dalla vostra lista!</p>
                     <button class="primary-btn" style="background: var(--purple);" onclick="pickRandomIdea()">Estrai un'Idea a Sorte</button>
                 </div>
-
-                <h2>Nuova Idea / Desiderio</h2>
-                <div class="card">
-                    <div class="form-group">
-                        <label>Cosa vorreste fare / vedere / provare?</label>
-                        <input type="text" id="ideaTitle" placeholder="Es. Ristorante giapponese">
-                    </div>
-                    <div class="form-group">
-                        <label>Categoria</label>
-                        <select id="ideaTag">
-                            <option value="🍝 Ristoranti">🍝 Ristoranti</option>
-                            <option value="🎬 Film & Serie">🎬 Film & Serie</option>
-                            <option value="✈️ Viaggi & Gite">✈️ Viaggi & Gite</option>
-                            <option value="🎁 Regali & Casa">🎁 Regali & Casa</option>
-                        </select>
-                    </div>
-                    <button class="primary-btn" onclick="addIdea()">Salva Idea</button>
-                </div>
                 <h2>Le Vostre Idee</h2>
                 <div id="ideasContainer"></div>
             </section>
 
             <!-- SEZIONE NOTE -->
             <section id="notes" class="section">
-                <h2>Nuova Nota</h2>
-                <div class="card">
-                    <div class="form-group">
-                        <label>Titolo Nota</label>
-                        <input type="text" id="noteTitle" placeholder="Titolo">
-                    </div>
-                    <div class="form-group">
-                        <label>Contenuto</label>
-                        <textarea id="noteContent" placeholder="Scrivi qui..."></textarea>
-                    </div>
-                    <div class="form-group">
-                        <label>Privacy</label>
-                        <select id="notePrivate">
-                            <option value="false">Condivisa</option>
-                            <option value="true">Privata (Visibile solo a te)</option>
-                        </select>
-                    </div>
-                    <button class="primary-btn" onclick="addNote()">Salva Nota</button>
-                </div>
                 <h2>Le Note</h2>
                 <div id="notesContainer"></div>
             </section>
@@ -1161,16 +1046,7 @@
             }
         };
 
-        // Funzioni form dedicati per Sezioni
-        window.addTask = async function() {
-            const title = document.getElementById('taskTitle').value.trim();
-            const recurrence = document.getElementById('taskRecurrence').value;
-            if (!title) return;
-            document.getElementById('taskTitle').value = '';
-            await addDoc(collection(db, `rooms/${currentRoomId}/tasks`), { title, completed: false, recurrence, createdBy: currentUserName });
-            await logAction(`ha aggiunto la task "${title}"`);
-        };
-
+        // Gestione Azioni Liste
         window.toggleTask = async (id, status, title, recurrence) => {
             const nextStatus = !status;
             await updateDoc(doc(db, `rooms/${currentRoomId}/tasks`, id), { completed: nextStatus });
@@ -1188,17 +1064,6 @@
         };
         window.deleteTask = async (id) => await deleteDoc(doc(db, `rooms/${currentRoomId}/tasks`, id));
 
-        window.addListItem = async function() {
-            const title = document.getElementById('listItemTitle').value.trim();
-            if (!title) return;
-            document.getElementById('listItemTitle').value = '';
-            await addDoc(collection(db, `rooms/${currentRoomId}/lists`), {
-                title,
-                aisle: detectGroceryAisle(title),
-                completed: false,
-                createdBy: currentUserName
-            });
-        };
         window.toggleListItem = async (id, status) => await updateDoc(doc(db, `rooms/${currentRoomId}/lists`, id), { completed: !status });
         window.deleteListItem = async (id) => await deleteDoc(doc(db, `rooms/${currentRoomId}/lists`, id));
         window.clearCompletedGrocery = async function() {
@@ -1206,19 +1071,6 @@
             for (const item of completedItems) {
                 await deleteDoc(doc(db, `rooms/${currentRoomId}/lists`, item.id));
             }
-        };
-
-        window.addDeadline = async function() {
-            const title = document.getElementById('dlTitle').value.trim();
-            const date = document.getElementById('dlDate').value;
-            const owner = document.getElementById('dlOwner').value;
-            const recurrence = document.getElementById('dlRecurrence').value;
-            const showInCal = document.getElementById('dlShowInCal').checked;
-            if (!title || !date) return alert('Compila tutti i campi');
-            document.getElementById('dlTitle').value = '';
-            document.getElementById('dlDate').value = '';
-            await addDoc(collection(db, `rooms/${currentRoomId}/deadlines`), { title, date, owner, recurrence, showInCal, createdBy: currentUserName });
-            await logAction(`ha aggiunto la scadenza "${title}"`);
         };
 
         window.completeDeadline = async function(id, title, date, owner, recurrence, showInCal) {
@@ -1243,22 +1095,6 @@
             await logAction(`ha eliminato la scadenza "${title}"`);
         };
 
-        window.addExpense = async function() {
-            const title = document.getElementById('expTitle').value.trim();
-            const amount = parseFloat(document.getElementById('expAmount').value);
-            const paidBy = document.getElementById('expPaidBy').value;
-            if (!title || isNaN(amount) || amount <= 0) return alert('Inserisci descrizione e importo valido');
-            document.getElementById('expTitle').value = '';
-            document.getElementById('expAmount').value = '';
-            await addDoc(collection(db, `rooms/${currentRoomId}/expenses`), {
-                title,
-                amount,
-                paidBy,
-                paidByName: currentUserName,
-                date: new Date().toISOString().split('T')[0]
-            });
-            await logAction(`💶 ha registrato una spesa di ${amount.toFixed(2)}€ (${title})`);
-        };
         window.deleteExpense = async (id) => await deleteDoc(doc(db, `rooms/${currentRoomId}/expenses`, id));
         window.settleUpExpenses = async function() {
             if (!confirm("Azzerare tutte le spese registrate e tornare in pari?")) return;
@@ -1268,14 +1104,6 @@
             await logAction(`🤝 ha azzerato i conti (Siete in pari!)`);
         };
 
-        window.addIdea = async function() {
-            const title = document.getElementById('ideaTitle').value.trim();
-            const tag = document.getElementById('ideaTag').value;
-            if (!title) return;
-            document.getElementById('ideaTitle').value = '';
-            await addDoc(collection(db, `rooms/${currentRoomId}/ideas`), { title, tag, createdBy: currentUserName });
-            await logAction(`💡 ha aggiunto un'idea: "${title}"`);
-        };
         window.deleteIdea = async (id) => await deleteDoc(doc(db, `rooms/${currentRoomId}/ideas`, id));
         window.pickRandomIdea = function() {
             if (!ideas.length) {
@@ -1299,16 +1127,6 @@
             alert(`"${title}" aggiunto al Calendario di oggi!`);
         };
 
-        window.addNote = async function() {
-            const title = document.getElementById('noteTitle').value.trim();
-            const content = document.getElementById('noteContent').value;
-            const isPrivate = document.getElementById('notePrivate').value === 'true';
-            if (!title) return;
-            document.getElementById('noteTitle').value = '';
-            document.getElementById('noteContent').value = '';
-            await addDoc(collection(db, `rooms/${currentRoomId}/notes`), { title, content, isPrivate, author: currentUserName });
-            await logAction(`ha creato una nota "${title}"`);
-        };
         window.deleteNote = async (id, title) => {
             await deleteDoc(doc(db, `rooms/${currentRoomId}/notes`, id));
             await logAction(`ha eliminato la nota "${title}"`);
@@ -1435,7 +1253,7 @@
                         <button onclick="deleteTask('${t.id}')" style="background:none; border:none; color:var(--danger); cursor:pointer;">🗑️</button>
                     </div>
                 </div>
-            `).join('') || '<div class="card card-sub">Nessuna attività inserita.</div>';
+            `).join('') || '<div class="card card-sub">Nessuna attività inserita. Usa il tasto + in basso per aggiungerne una.</div>';
 
             // Spesa Raggruppata
             const filteredLists = lists.filter(l => !searchQuery || l.title.toLowerCase().includes(searchQuery));
@@ -1459,7 +1277,7 @@
                     `).join('')}
                 `).join('');
             } else {
-                document.getElementById('listsContainer').innerHTML = '<div class="card card-sub">Lista della spesa vuota.</div>';
+                document.getElementById('listsContainer').innerHTML = '<div class="card card-sub">Lista della spesa vuota. Usa il tasto + per aggiungere articoli.</div>';
             }
 
             // Deadlines View
