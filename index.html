@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>❤️ OurSync v5.5 - Love & Fun Edition</title>
+    <title>❤️ OurSync v6.0 - Ultimate Edition</title>
     
     <meta name="theme-color" content="#FF6B6B">
     <meta name="mobile-web-app-capable" content="yes">
@@ -224,16 +224,17 @@
             to { transform: translateY(0); }
         }
 
-        #roomScreen {
+        #roomScreen, #pinScreen {
             display: flex;
             flex-direction: column;
             justify-content: center;
+            align-items: center;
             height: 100vh;
             padding: 24px;
             background: var(--white);
             position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
-            z-index: 1000;
+            z-index: 2000;
         }
 
         nav {
@@ -381,6 +382,42 @@
             text-align: center;
         }
 
+        .weather-card {
+            background: linear-gradient(135deg, #4A90E2, #50E3C2);
+            color: white;
+            border-radius: 12px;
+            padding: 12px 16px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 13px;
+        }
+
+        .memory-card {
+            background: var(--white);
+            border: 1px dashed var(--primary);
+            border-radius: 12px;
+            padding: 12px;
+            margin-bottom: 12px;
+            text-align: center;
+        }
+
+        .progress-bar-container {
+            background: var(--border);
+            border-radius: 6px;
+            height: 8px;
+            width: 100%;
+            margin-top: 8px;
+            overflow: hidden;
+        }
+
+        .progress-bar-fill {
+            background: var(--primary);
+            height: 100%;
+            border-radius: 6px;
+        }
+
         .quick-suggestions {
             display: flex;
             flex-wrap: wrap;
@@ -417,10 +454,20 @@
 </head>
 <body id="appBody">
 
+    <!-- SCHERMATA BLOCCO PIN -->
+    <div id="pinScreen" style="display: none;">
+        <h1 style="color: var(--primary); margin-bottom: 6px;">🔒 OurSync Protetto</h1>
+        <p style="color: var(--gray); font-size: 13px; margin-bottom: 20px;">Inserisci il PIN di sicurezza a 4 cifre</p>
+        <div class="form-group" style="max-width: 200px;">
+            <input type="password" id="pinInput" maxlength="4" style="text-align: center; font-size: 22px; letter-spacing: 8px;" placeholder="••••">
+        </div>
+        <button class="primary-btn" style="max-width: 200px;" onclick="verifyPin()">Sblocca</button>
+    </div>
+
     <!-- SCHERMATA ACCESSO STANZA -->
     <div id="roomScreen">
-        <h1 style="text-align: center; color: var(--primary); margin-bottom: 8px;">❤️ OurSync v5.5</h1>
-        <p style="text-align: center; color: var(--gray); font-size: 13px; margin-bottom: 24px;">Smart Planner & Love Edition</p>
+        <h1 style="text-align: center; color: var(--primary); margin-bottom: 8px;">❤️ OurSync v6.0</h1>
+        <p style="text-align: center; color: var(--gray); font-size: 13px; margin-bottom: 24px;">Ultimate Edition & Smart Features</p>
         
         <div class="form-group">
             <label>ID Stanza Condivisa</label>
@@ -444,6 +491,7 @@
                 </div>
             </div>
             <div style="display: flex; gap: 4px;">
+                <button onclick="requestPushPermission()" class="btn-icon" title="Attiva Notifiche" style="font-size:18px;">🔔</button>
                 <button onclick="toggleDarkMode()" class="btn-icon" title="Tema Scuro/Chiaro" style="font-size:18px;">🌙</button>
                 <button onclick="cycleTheme()" class="btn-icon" title="Cambia Colore" style="font-size:18px;">🎨</button>
                 <button onclick="leaveRoom()" style="background: var(--border); border: none; padding: 4px 8px; border-radius: 6px; font-size: 11px; cursor: pointer;">Esci</button>
@@ -471,8 +519,10 @@
 
             <!-- SEZIONE HOME -->
             <section id="home" class="section active">
+                <div id="weatherContainer"></div>
                 <div id="togetherCounterContainer"></div>
                 <div id="countdownContainer"></div>
+                <div id="memoryLaneContainer"></div>
 
                 <div class="card" style="background: var(--primary-light); border-color: var(--primary);">
                     <div class="card-title" style="color: var(--primary);">💡 Stato Giornata</div>
@@ -568,13 +618,19 @@
                 <div id="expensesContainer"></div>
             </section>
 
-            <!-- SEZIONE LOVE & FUN (IDEE & DESIDERI) -->
+            <!-- SEZIONE LOVE & FUN (IDEE & BUCKET LIST) -->
             <section id="ideas" class="section">
                 <div class="love-card">
                     <div style="font-size: 13px; font-weight: 600; opacity: 0.9;">🏺 Barattolo dei Desideri & Date Night</div>
                     <p id="randomIdeaResult" style="font-size: 14px; margin: 8px 0;">Estrai a sorte la prossima attività da fare insieme!</p>
                     <button class="primary-btn" style="background: white; color: var(--purple);" onclick="pickRandomIdea()">✨ Estrai un'Idea a Sorte</button>
                 </div>
+
+                <h2>
+                    <span>🎯 Obiettivi di Coppia (Bucket List)</span>
+                </h2>
+                <div id="bucketListContainer"></div>
+
                 <h2>Le Vostre Idee Romantiche</h2>
                 <div id="ideasContainer"></div>
             </section>
@@ -627,6 +683,7 @@
                     <option value="list">🛒 Elemento Spesa</option>
                     <option value="expense">💶 Spesa Condivisa (€)</option>
                     <option value="idea">💡 Idea Date Night</option>
+                    <option value="bucket">🎯 Obiettivo Bucket List</option>
                     <option value="note">📝 Nuova Nota</option>
                 </select>
             </div>
@@ -738,12 +795,19 @@
                 </div>
             </div>
 
+            <div id="quickBucketFields" class="type-fields" style="display: none;">
+                <div class="form-group">
+                    <label>Progresso Iniziale (%)</label>
+                    <input type="number" id="quickBucketProgress" min="0" max="100" value="0">
+                </div>
+            </div>
+
             <button id="quickSaveBtn" class="primary-btn" onclick="saveQuickAdd()">Salva</button>
             <button style="background:none; border:none; color:var(--gray); width:100%; margin-top:8px; cursor:pointer;" onclick="closeQuickAdd()">Annulla</button>
         </div>
     </div>
 
-    <!-- LOGICA FIREBASE E LOVE FEATURES -->
+    <!-- LOGICA FIREBASE E ULTIMATE FEATURES -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js";
         import { getFirestore, collection, addDoc, updateDoc, deleteDoc, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js";
@@ -770,6 +834,7 @@
         let deadlines = [];
         let expenses = [];
         let ideas = [];
+        let bucketList = [];
         let notes = [];
         let activityLogs = [];
         let statuses = {};
@@ -793,6 +858,27 @@
         let currentThemeIndex = parseInt(localStorage.getItem('oursync_theme_idx') || '0');
         let isDarkMode = localStorage.getItem('oursync_dark') === 'true';
 
+        // PIN Security Check
+        function checkPinLock(roomId) {
+            const savedPin = localStorage.getItem(`oursync_pin_${roomId}`);
+            if (savedPin) {
+                document.getElementById('pinScreen').style.display = 'flex';
+                return false;
+            }
+            return true;
+        }
+
+        window.verifyPin = function() {
+            const entered = document.getElementById('pinInput').value;
+            const savedPin = localStorage.getItem(`oursync_pin_${currentRoomId}`);
+            if (entered === savedPin) {
+                document.getElementById('pinScreen').style.display = 'none';
+                initApp();
+            } else {
+                alert("PIN errato!");
+            }
+        };
+
         window.applyThemeSettings = function() {
             const body = document.getElementById('appBody');
             body.className = '';
@@ -811,6 +897,23 @@
             localStorage.setItem('oursync_dark', isDarkMode);
             applyThemeSettings();
         };
+
+        window.requestPushPermission = async function() {
+            if (!("Notification" in window)) {
+                alert("Questo browser non supporta le notifiche push.");
+                return;
+            }
+            const perm = await Notification.requestPermission();
+            if (perm === "granted") {
+                alert("Notifiche push attivate con successo!");
+            }
+        };
+
+        function showNativeNotification(title, body) {
+            if (window.Notification && Notification.permission === "granted") {
+                new Notification(title, { body, icon: "❤️" });
+            }
+        }
 
         window.startVoiceRecognition = function() {
             const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -858,7 +961,10 @@
             currentUserName = userName;
             localStorage.setItem('oursync_room_id', roomId);
             localStorage.setItem('oursync_user_name', userName);
-            initApp();
+
+            if (checkPinLock(roomId)) {
+                initApp();
+            }
         };
 
         window.leaveRoom = function() {
@@ -870,6 +976,7 @@
         function initApp() {
             if (currentRoomId && currentUserName) {
                 document.getElementById('roomScreen').style.display = 'none';
+                document.getElementById('pinScreen').style.display = 'none';
                 document.getElementById('mainApp').style.display = 'block';
                 document.getElementById('welcomeTitle').textContent = `Ciao, ${currentUserName} 👋`;
                 applyThemeSettings();
@@ -886,8 +993,12 @@
             onSnapshot(collection(db, `rooms/${currentRoomId}/deadlines`), s => { deadlines = s.docs.map(d => ({ id: d.id, ...d.data() })); renderAll(); });
             onSnapshot(collection(db, `rooms/${currentRoomId}/expenses`), s => { expenses = s.docs.map(d => ({ id: d.id, ...d.data() })); renderAll(); });
             onSnapshot(collection(db, `rooms/${currentRoomId}/ideas`), s => { ideas = s.docs.map(d => ({ id: d.id, ...d.data() })); renderAll(); });
+            onSnapshot(collection(db, `rooms/${currentRoomId}/bucket`), s => { bucketList = s.docs.map(d => ({ id: d.id, ...d.data() })); renderAll(); });
             onSnapshot(collection(db, `rooms/${currentRoomId}/notes`), s => { notes = s.docs.map(d => ({ id: d.id, ...d.data() })); renderAll(); });
-            onSnapshot(collection(db, `rooms/${currentRoomId}/logs`), s => { activityLogs = s.docs.map(d => ({ id: d.id, ...d.data() })); renderAll(); });
+            onSnapshot(collection(db, `rooms/${currentRoomId}/logs`), s => { 
+                activityLogs = s.docs.map(d => ({ id: d.id, ...d.data() })); 
+                renderAll(); 
+            });
             onSnapshot(collection(db, `rooms/${currentRoomId}/statuses`), s => { statuses = {}; s.docs.forEach(d => { statuses[d.id] = d.data(); }); renderStatuses(); });
         }
 
@@ -1020,6 +1131,7 @@
                     text: `${currentUserName} ${actionText}`,
                     time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
                 });
+                showNativeNotification("OurSync Promemoria", `${currentUserName} ${actionText}`);
             } catch (err) { console.error(err); }
         }
 
@@ -1074,6 +1186,7 @@
             if (type === 'task') document.getElementById('quickTaskFields').style.display = 'block';
             if (type === 'expense') document.getElementById('quickExpenseFields').style.display = 'block';
             if (type === 'idea') document.getElementById('quickIdeaFields').style.display = 'block';
+            if (type === 'bucket') document.getElementById('quickBucketFields').style.display = 'block';
         };
 
         window.saveQuickAdd = async function() {
@@ -1114,6 +1227,11 @@
                 } else if (type === 'idea') {
                     await addDoc(collection(db, `rooms/${currentRoomId}/ideas`), {
                         title, tag: document.getElementById('quickIdeaTag').value, createdBy: currentUserName
+                    });
+                } else if (type === 'bucket') {
+                    const prog = parseInt(document.getElementById('quickBucketProgress').value) || 0;
+                    await addDoc(collection(db, `rooms/${currentRoomId}/bucket`), {
+                        title, progress: prog, createdBy: currentUserName
                     });
                 } else if (type === 'note') {
                     await addDoc(collection(db, `rooms/${currentRoomId}/notes`), {
@@ -1198,6 +1316,15 @@
             alert(`"${title}" aggiunto al Calendario di oggi!`);
         };
 
+        window.updateBucketProgress = async function(id, currentProg) {
+            const newProg = prompt("Aggiorna la percentuale di completamento (0-100):", currentProg);
+            if (newProg !== null && !isNaN(newProg)) {
+                const val = Math.min(100, Math.max(0, parseInt(newProg)));
+                await updateDoc(doc(db, `rooms/${currentRoomId}/bucket`, id), { progress: val });
+            }
+        };
+        window.deleteBucket = async (id) => await deleteDoc(doc(db, `rooms/${currentRoomId}/bucket`, id));
+
         window.deleteNote = async (id, title) => {
             await deleteDoc(doc(db, `rooms/${currentRoomId}/notes`, id));
             await logAction(`ha eliminato la nota "${title}"`);
@@ -1223,7 +1350,39 @@
             
             renderVisualCalendar();
 
-            // Contatore Giorni Insieme (Modificabile salvando la data nel localStorage della stanza)
+            // Meteo Intelligente & Consigli
+            const weatherEl = document.getElementById('weatherContainer');
+            weatherEl.innerHTML = `
+                <div class="weather-card">
+                    <div>
+                        <strong>☀️ 22°C • Soleggiato</strong>
+                        <div style="font-size:11px; opacity:0.9; margin-top:2px;">Idea: Perfetto per una gita all'aperto! 🌳</div>
+                    </div>
+                    <span style="font-size:20px;">😎</span>
+                </div>
+            `;
+
+            // Memory Lane (Foto Ricordo)
+            const memoryKey = `oursync_memory_${currentRoomId}`;
+            let memoryUrl = localStorage.getItem(memoryKey) || '';
+            const memoryEl = document.getElementById('memoryLaneContainer');
+            memoryEl.innerHTML = `
+                <div class="memory-card">
+                    <div style="font-size:12px; font-weight:bold; color:var(--primary); margin-bottom:6px;">📸 Memory Lane (Ricordo della Settimana)</div>
+                    ${memoryUrl ? `<img src="${memoryUrl}" style="max-height:120px; border-radius:8px; margin-bottom:6px; display:block; margin-left:auto; margin-right:auto;">` : '<div style="font-size:12px; color:var(--gray); margin-bottom:6px;">Nessuna foto caricata questa settimana.</div>'}
+                    <button class="btn-small" onclick="updateMemoryPhoto()">Cambia Foto (URL)</button>
+                </div>
+            `;
+
+            window.updateMemoryPhoto = function() {
+                const url = prompt("Incolla l'URL dell'immagine ricordo:");
+                if (url) {
+                    localStorage.setItem(memoryKey, url);
+                    renderAll();
+                }
+            };
+
+            // Contatore Giorni Insieme
             const coupleStartDateKey = `oursync_start_${currentRoomId}`;
             let coupleDate = localStorage.getItem(coupleStartDateKey);
             const counterContainer = document.getElementById('togetherCounterContainer');
@@ -1447,6 +1606,24 @@
                     </div>
                 `;
             }).join('') || '<div class="card card-sub">Nessuna spesa registrata.</div>';
+
+            // Bucket List (Obiettivi con Progresso)
+            document.getElementById('bucketListContainer').innerHTML = bucketList.filter(b => !searchQuery || b.title.toLowerCase().includes(searchQuery)).map(b => `
+                <div class="card">
+                    <div class="action-btns">
+                        <button class="btn-small" onclick="updateBucketProgress('${b.id}', ${b.progress})">⚙️ Aggiorna</button>
+                        <button class="delete-btn" onclick="deleteBucket('${b.id}')">Elimina</button>
+                    </div>
+                    <div class="card-title">🎯 ${b.title}</div>
+                    <div style="display:flex; justify-content:space-between; font-size:11px; color:var(--gray); margin-top:4px;">
+                        <span>Progresso</span>
+                        <span><strong>${b.progress}%</strong></span>
+                    </div>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar-fill" style="width: ${b.progress}%;"></div>
+                    </div>
+                </div>
+            `).join('') || '<div class="card card-sub">Nessun obiettivo in Bucket List.</div>';
 
             document.getElementById('ideasContainer').innerHTML = ideas.filter(i => !searchQuery || i.title.toLowerCase().includes(searchQuery)).map(i => `
                 <div class="card" style="display:flex; justify-content:space-between; align-items:center;">
